@@ -1,3 +1,5 @@
+@import "./main.scss";
+
 .App {
   text-align: center;
 }
@@ -11,6 +13,10 @@
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
+}
+
+.margin-bottom-10{
+  margin-bottom: 10px !important;
 }
 
 .App-header {

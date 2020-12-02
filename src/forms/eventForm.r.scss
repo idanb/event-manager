@@ -1,0 +1,20 @@
+form {
+  display: flex;
+  max-height: 100%;
+  overflow: scroll;
+
+  div {
+    width: 40%;
+    margin: 0 10px;
+  }
+
+  input[type=checkbox] {
+    display: inline-block;
+    background: red;
+  }
+
+  label.checkbox {
+    display: inline;
+    margin: 0 8px;
+  }
+}

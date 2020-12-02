@@ -11,3 +11,38 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+button,
+.button {
+  margin-bottom: 0 !important;
+  margin-right: .5rem;
+}
+
+
+h1 {
+  color: #00A0EA;
+  font-size: 2em;
+  padding: 10px 0;
+  text-align: center;
+}
+body{
+  direction: rtl;
+  font-size: 14px;
+}
+
+thead{
+  background-color: #8DC3F5;
+}
+
+table th {
+  padding: 3px 0px;
+  text-align: center;
+}
+
+table td{
+  text-align: right;
+}
+
+table tr.red{
+  background: #ff9266;
+}
