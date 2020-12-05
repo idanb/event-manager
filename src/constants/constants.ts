@@ -1,0 +1,6 @@
+export enum EventTypes {
+    COMPETITIONS_SINGLES = 0,
+    COMPETITIONS_COUPLES = 1,
+    COMPETITIONS_GROUPS = 2,
+    EVENT = 3
+}

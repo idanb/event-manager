@@ -1,0 +1,47 @@
+{
+
+  "translations": {
+    "paragraph": "Introduction",
+    "system_name": "רשימת תחרויות / אירועים קרובים",
+    "author": {
+      "title": "Author Name",
+      "value": "Tariqul"
+    },
+    "description": {
+      "title": "תיאור",
+      "value": "Whenever I smell strong tobacco smoke when I'm in an enclosed space such as a room, train, or aircraft, I begin to get angry. There are several reasons. First, medical researchers have shown that secondhand smoke, that is, the smoke from other people's cigarettes, causes cancer and other health problems. If the smoke were car exhaust or burning trash, we would put out the fire and open the windows to get rid of the smoke. Second, it stinks. The smoke drifts away from the smoker and fills the room."
+    },
+    "name": "שם",
+    "type": "סוג",
+    "date": "תאריך ושעה",
+    "actions": "פעולות",
+    "edit": "עריכה",
+    "delete": "מחיקה",
+    "location": "מיקום",
+    "COMPETITIONS_GROUPS": "קבוצות",
+    "COMPETITIONS_SINGLES": "יחידים",
+    "COMPETITIONS_COUPLES": "זוגות",
+    "EVENT": "ארוע",
+    "registration_deadline": "תאריך סיום הרשמה",
+    "add": "הוספת תחרות",
+    "save": " שמירה",
+    "has_age_limit": "האם קיימת הגבלה בטווח גילאים",
+    "cancel": " ביטול",
+    "schedule": " לוז",
+    "is_online": "תחרות מקוונת (online)",
+    "is_active": " מוצגת באתר",
+    "min_age_limit": " גיל מינימלי להשתתפות",
+    "max_age_limit": " גיל מקסימלי להשתתפות",
+    "has_registration_list":" רשימת מוזמנים נטענת בקובץ ",
+    "is_festival": " האם פסטיבל",
+    "max_rank_limit": "  דרגת שחקנים מקסימאלית",
+    "min_rank_limit": "  דרגת שחקנים מינימאלית",
+    "has_rank_limit": " האם קיימת מגבלת תואר",
+    "only_members_limit": "התחרות מוגבלת לחברים בלבד",
+    "max_participates_limit": "      מספר משתתפים מקסימלי",
+    "event_type_single":" אירוע יחיד",
+    "event_type_group":" אירוע קבוצתי",
+    "event_type_couple":" אירוע זוגי",
+    "event_type_event":" סוג אירוע "
+  }
+}
