@@ -59,11 +59,10 @@ debugger;
 
     return (
         <>
-            <header></header>
             <main>
                 <form>
 
-                    <div>
+                    <div className={'col-left'}>
                         <label>  {t('name')}</label>
                         <input type="text" name="name" value={event.name} onChange={handleInputChange}/>
 
@@ -126,7 +125,8 @@ debugger;
                         <label>{t('description.title')} </label>
                         <input type="text" name="username" value={event.description} onChange={handleInputChange}/>
                     </div>
-                    <div>
+
+                    <div className={'col-right'}>
                         <input type="checkbox" name="has_registration_list" checked={event.has_registration_list}
                                onChange={handleInputChange}/>
                         <label className={'checkbox'}>  {t('has_registration_list')}</label>

@@ -6,6 +6,7 @@ export interface ModalProps {
   visible: boolean;
   className?: string;
   width?: string;
+  title?: string;
   modalClosed?: any;
   children?: any;
 }
@@ -22,6 +23,7 @@ export const Modal = (props: ModalProps) => {
     props.modalClosed();
   };
   return (<Dialog visible={visible}
+                  header={props.title}
                  className={classNames.join(' ')}
                  style={{width: width}}
                  onHide={onHide}>

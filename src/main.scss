@@ -373,7 +373,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font: normal normal normal 1rem/1.6 -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial, sans-serif;
-  font-size: 1rem;
+  font-size: 13px;
 }
 
 body {
@@ -557,8 +557,34 @@ dd {
   padding: 0 1rem;
 }
 
+td.true-sign {
+  text-align: center;
+  &:after {
+    content: "";
+    background: url("assets/check.png");
+    width: 21px;
+    height: 21px;
+    display: inline-block;
+    background-size: 100%;
+
+  }
+}
+
+td.false-sign {
+  text-align: center;
+  &:after {
+    content: "";
+    background: url("assets/false-icon.png");
+    width: 21px;
+    height: 21px;
+    display: inline-block;
+    background-size: 100%;
+
+  }
+}
+
 .container, .small-container, .medium-container {
-  max-width: 1200px;
+  max-width: 1350px;
   padding: 0 1rem;
   margin-left: auto;
   margin-right: auto;
@@ -835,9 +861,12 @@ a.accent-button:active {
 
 .muted-button,
 a.muted-button {
-  background: transparent;
+  background: #ffffff;
+  margin: 1px;
   border: 1px solid #cdcdcd;
   color: #4e4e4e;
+  padding: 7px 14px;
+  box-shadow: 1px 2px #80808052;
 }
 
 .muted-button:hover, .muted-button:focus, .muted-button:active,
@@ -846,7 +875,7 @@ a.muted-button:focus,
 a.muted-button:active {
   color: #4e4e4e;
   border: 1px solid #818181;
-  background: transparent;
+  background: #f0f0f0;
 }
 
 .round-button,
@@ -876,7 +905,7 @@ a.full-button {
   outline: none;
   background: transparent;
   margin-bottom: 0.5rem;
-  font-size: 1rem;
+  font-size: 13px;
   width: 100%;
   max-width: 100%;
   line-height: 1;

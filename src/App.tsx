@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import "bootstrap/dist/css/bootstrap.min.css";
 import './App.scss';
 import EventTable from './tables/EventTable'
 import Axios from "axios";
@@ -9,7 +10,7 @@ import Modal from "./components/modal/modal";
 import EventForm from "./forms/eventForm";
 
 const App = () => {
-  var url = 'http://local.bridge.co.il/backend';
+  var url = 'http://local.bridge.co.il/payments/payments_dev.php/competitions/events';
   const { t, i18n } = useTranslation();
 
   Axios.post(url, {
@@ -17,6 +18,7 @@ const App = () => {
     clubs: 0,
     year: 2020,
     month: 10}).then((res)=>{
+    console.log(res);
   })
 
   const initialFormState = { id: '', name: '', description: '' };
@@ -29,6 +31,7 @@ const App = () => {
   const showFormModal = () => showForm ? <Modal
       className='ic-modal'
       width={"80%"}
+      title={t('form_title')}
       modalClosed={() => setShowForm(false)}
       visible={showForm}>
     <EventForm onSave={test} onCancel={test}></EventForm>
@@ -83,12 +86,6 @@ const App = () => {
           {t('add')}
         </button>
         <div className="flex-row">
-          {/*<div className="flex-large">*/}
-          {/*		<Fragment>*/}
-          {/*			<AddUserForm addUser={addUser} />*/}
-          {/*		</Fragment>*/}
-          {/*	)}*/}
-          {/*</div>*/}
           <div className="flex-large">
             <EventTable events={events} editEvent={editEvent} deleteEvent={deleteEvent} />
           </div>
