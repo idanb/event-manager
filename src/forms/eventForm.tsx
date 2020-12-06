@@ -67,8 +67,7 @@ const EventForm = (props: AddEventProp) => {
             <main>
                 <form>
 
-                    <div>
-
+                    <div className={'col-left'}>
                         <label>  {t('name')}</label>
                         <input type="text" name="name" value={event.name} onChange={handleInputChange}/>
 
@@ -102,14 +101,12 @@ const EventForm = (props: AddEventProp) => {
                                onChange={handleInputChange}/>
                         <label className={'checkbox'}>  {t('has_age_limit')}</label>
 
-                        <label>  {t('max_age_limit')}</label>
-                        <input type="number" name="max_age_limit" value={event.max_age_limit}
-                               disabled={event.has_age_limit}
+                        <label>  {t('min_age_limit')}</label>
+                        <input type="number" name="min_age_limit" value={event.min_age_limit} disabled={event.has_age_limit}
                                onChange={handleInputChange}/>
 
-                        <label>  {t('min_age_limit')}</label>
-                        <input type="number" name="min_age_limit" value={event.min_age_limit}
-                               disabled={event.has_age_limit}
+                        <label>  {t('max_age_limit')}</label>
+                        <input type="number" name="max_age_limit" value={event.max_age_limit} disabled={event.has_age_limit}
                                onChange={handleInputChange}/>
 
 
@@ -144,9 +141,8 @@ const EventForm = (props: AddEventProp) => {
                         </label>
 
                     </div>
+                    <div className={'col-right'}>
 
-
-                    <div>
                         <label>{t('location')} </label>
                         <input type="text" name="location" value={event.location} onChange={handleInputChange}/>
 

@@ -3,7 +3,7 @@ export interface IEvent {
     name: string;
     date: string;
     event_type: string;
-    // is_festival: boolean | string;
+    is_festival: boolean | string;
     // only_members_limit: string;
     // max_participates_limit: string;
     // has_rank_limit: string;
@@ -13,15 +13,15 @@ export interface IEvent {
     // has_age_limit: string;
     // min_age_limit?: any;
     // max_age_limit?: any;
-    // has_registration_list: string;
-    // regulations_file_link?: any;
+    has_registration_list: boolean;
+    regulations_file_link?: any;
     // location: string;
     // schedule?: any;
     description?: any;
     // registration_deadline: string;
-    // price: string;
-    // guest_extra_price: string;
-    // is_active: boolean | string;
-    // is_online: boolean | string;
+    price: string;
+    guest_extra_price: string;
+    is_active: boolean | string;
+    is_online: boolean | string;
     target?: any;
 }

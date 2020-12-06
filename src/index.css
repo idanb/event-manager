@@ -43,6 +43,6 @@ table td{
   text-align: right;
 }
 
-table tr.red{
-  background: #ff9266;
+table tr.red td:first-child{
+  color: #ff9266;
 }

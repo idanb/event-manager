@@ -10,6 +10,7 @@
   border-radius: 3px;
   box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.16);
   border: 1px solid #c8c8c8;
+
   .p-dialog-header {
     border-bottom: 1px solid #c8c8c8;
     background: #f4f4f4;
@@ -17,10 +18,12 @@
     padding: 1rem;
     border-top-right-radius: 3px;
     border-top-left-radius: 3px;
+
     .p-dialog-title {
       font-weight: 700;
       font-size: 1rem;
     }
+
     .p-dialog-header-icon {
       width: 2rem;
       height: 2rem;
@@ -31,6 +34,7 @@
       transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
       margin-right: 0.5rem;
       color: #848484;
+
       &:enabled {
         &:hover {
           color: var(--primary-color);
@@ -39,21 +43,25 @@
           color: var(--text-color);
         }
       }
+
       &:focus {
         outline: 0 none;
         outline-offset: 0;
         box-shadow: 0 0 0 0.2rem #8dcdff;
       }
+
       &:last-child {
         margin-right: 0;
       }
     }
   }
+
   .p-dialog-content {
     background: #ffffff;
     color: var(--text-color);
     padding: 1rem;
   }
+
   .p-dialog-footer {
     border-top: 1px solid #c8c8c8;
     background: #ffffff;
@@ -62,6 +70,7 @@
     text-align: right;
     border-bottom-right-radius: 3px;
     border-bottom-left-radius: 3px;
+
     button {
       margin: 0 0.5rem 0 0;
       width: auto;
