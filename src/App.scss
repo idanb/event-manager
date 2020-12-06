@@ -1,4 +1,6 @@
 @import "./main.scss";
+@import "react-datepicker/dist/react-datepicker.css";
+@import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 .App {
   text-align: center;
@@ -15,7 +17,7 @@
   }
 }
 
-.margin-bottom-10{
+.margin-bottom-10 {
   margin-bottom: 10px !important;
 }
 
@@ -32,6 +34,11 @@
 
 .App-link {
   color: #61dafb;
+}
+
+.rdw-dropdown-carettoopen,
+.rdw-dropdown-carettoclose {
+  display: none !important;
 }
 
 @keyframes App-logo-spin {

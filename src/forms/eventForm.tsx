@@ -1,6 +1,9 @@
-import React, {useState} from 'react'
+import React, {useState, useRef} from 'react';
 import {useTranslation} from "react-i18next";
 import DatePicker from "react-datepicker";
+import {Editor} from "react-draft-wysiwyg";
+
+
 import './eventForm.r.scss';
 
 
@@ -41,21 +44,22 @@ const EventForm = (props: AddEventProp) => {
 
     };
     const [event, setEvent] = useState(initialFormState);
-    const [title, setTitle] = useState('Title');
-    const {t, i18n} = useTranslation();
+    const {t} = useTranslation();
 
     const handleInputChange = (e: any) => {
-        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        const value = (e.target.type === 'checkbox' ? e.target.checked : e.target.value);
         const name = e.target.name;
-debugger;
-        if(name === 'has_age_limit'){
+
+        if (name === 'has_age_limit') {
             setEvent({...event, ['min_age_limit']: 0})
             setEvent({...event, ['max_age_limit']: 0})
         }
-
-
         setEvent({...event, [name]: value})
-    }
+    };
+
+    const handleEditorInputChange = (e: any) => {
+        setEvent({...event, [e.name]: e.text})
+    };
 
     return (
         <>
@@ -64,12 +68,29 @@ debugger;
                 <form>
 
                     <div>
+
                         <label>  {t('name')}</label>
                         <input type="text" name="name" value={event.name} onChange={handleInputChange}/>
 
-                        <input type="checkbox" name="is_festival" checked={event.is_festival}
-                               onChange={handleInputChange}/>
-                        <label className={'checkbox'}>  {t('is_festival')}</label>
+                        <ul style={{marginBottom: 50}}>
+
+                            <input type="checkbox" name="is_festival" checked={event.is_festival}
+                                   onChange={handleInputChange}/>
+                            <label className={'checkbox'}>  {t('is_festival')}</label>
+
+                            <ul style={{float: "left", marginLeft: 15}}>
+                                <input type="checkbox" name="has_registration_list"
+                                       checked={event.has_registration_list}
+                                       onChange={handleInputChange}/>
+                                <label className={'checkbox'}>  {t('has_registration_list')}</label><br/>
+
+
+                                <input type="checkbox" name="only_members_limit" checked={event.only_members_limit}
+                                       onChange={handleInputChange}/>
+                                <label className={'checkbox'}>  {t('only_members_limit')}</label>
+                            </ul>
+
+                        </ul>
 
 
                         <label>  {t('max_participates_limit')}</label>
@@ -81,12 +102,14 @@ debugger;
                                onChange={handleInputChange}/>
                         <label className={'checkbox'}>  {t('has_age_limit')}</label>
 
-                        <label>  {t('min_age_limit')}</label>
-                        <input type="number" name="min_age_limit" value={event.min_age_limit} disabled={event.has_age_limit}
+                        <label>  {t('max_age_limit')}</label>
+                        <input type="number" name="max_age_limit" value={event.max_age_limit}
+                               disabled={event.has_age_limit}
                                onChange={handleInputChange}/>
 
-                        <label>  {t('max_age_limit')}</label>
-                        <input type="number" name="max_age_limit" value={event.max_age_limit} disabled={event.has_age_limit}
+                        <label>  {t('min_age_limit')}</label>
+                        <input type="number" name="min_age_limit" value={event.min_age_limit}
+                               disabled={event.has_age_limit}
                                onChange={handleInputChange}/>
 
 
@@ -104,40 +127,28 @@ debugger;
                                onChange={handleInputChange}/>
 
 
-                        <input type="checkbox" name="only_members_limit" checked={event.only_members_limit}
-                               onChange={handleInputChange}/>
-                        <label className={'checkbox'}>  {t('only_members_limit')}</label>
-
-
                         <label>  {t('date')}</label>
                         <DatePicker selected={event.date} onChange={handleInputChange}/>
+                        <label>  {t('registration_deadline')}</label>
+                        <DatePicker selected={event.registration_deadline} onChange={handleInputChange}/>
 
 
                         <label>
                             {t('type')}
                             <select value={event.event_type} onChange={handleInputChange}>
-                                <option value="0">{t('event_type.single')}</option>
-                                <option value="1">{t('event_type.group')}</option>
-                                <option value="2">{t('event_type.couple')}</option>
-                                <option value="3">{t('event_type.event')}</option>
+                                <option value="0">{t('event_type_single')}</option>
+                                <option value="1">{t('event_type_group')}</option>
+                                <option value="2">{t('event_type_couple')}</option>
+                                <option value="3">{t('event_type_event')}</option>
                             </select>
                         </label>
 
-                        <label>{t('description.title')} </label>
-                        <input type="text" name="username" value={event.description} onChange={handleInputChange}/>
                     </div>
+
+
                     <div>
-                        <input type="checkbox" name="has_registration_list" checked={event.has_registration_list}
-                               onChange={handleInputChange}/>
-                        <label className={'checkbox'}>  {t('has_registration_list')}</label>
-
-
                         <label>{t('location')} </label>
                         <input type="text" name="location" value={event.location} onChange={handleInputChange}/>
-
-                        <label>{t('schedule')} </label>
-                        <input type="text" name="schedule" value={event.schedule} onChange={handleInputChange}/>
-
 
                         <input type="checkbox" name="is_active" checked={event.is_active}
                                onChange={handleInputChange}/>
@@ -148,12 +159,29 @@ debugger;
                                onChange={handleInputChange}/>
                         <label className={'checkbox'}>  {t('is_online')}</label>
 
-                        <label>  {t('registration_deadline')}</label>
-                        <DatePicker selected={event.registration_deadline} onChange={handleInputChange}/>
+                        <label>{t('schedule')} </label>
+                        <Editor
+                            editorStyle={{height: "100px", overflow: "hidden"}}
+                            onChange={(e) => handleEditorInputChange({
+                                text: e.blocks[0].text,
+                                name: "schedule",
+                                value: event.schedule
+                            })}/>
+
+                        <label>{t('description.title')} </label>
+                        <Editor
+                            editorStyle={{height: "100px", overflow: "hidden"}}
+                            onChange={(e) => handleEditorInputChange({
+                                text: e.blocks[0].text,
+                                name: "description",
+                                value: event.description
+                            })}/>
+
 
                     </div>
                 </form>
             </main>
+
             <footer className="trb-holder align-right">
                 <button type="button" className="trb trb-secondary lt up"
                         onClick={() => props.onCancel()}>{t('save')}</button>

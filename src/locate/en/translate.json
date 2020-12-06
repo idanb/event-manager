@@ -32,12 +32,16 @@
     "is_active": " מוצגת באתר",
     "min_age_limit": " גיל מינימלי להשתתפות",
     "max_age_limit": " גיל מקסימלי להשתתפות",
-    "has_registration_list": " רשימת מוזמנים נטענת בקובץ",
+    "has_registration_list":" רשימת מוזמנים נטענת בקובץ ",
     "is_festival": " האם פסטיבל",
     "max_rank_limit": "  דרגת שחקנים מקסימאלית",
     "min_rank_limit": "  דרגת שחקנים מינימאלית",
     "has_rank_limit": " האם קיימת מגבלת תואר",
     "only_members_limit": "התחרות מוגבלת לחברים בלבד",
-    "max_participates_limit": "      מספר משתתפים מקסימלי"
+    "max_participates_limit": "      מספר משתתפים מקסימלי",
+    "event_type_single":" אירוע יחיד",
+    "event_type_group":" אירוע קבוצתי",
+    "event_type_couple":" אירוע זוגי",
+    "event_type_event":" סוג אירוע "
   }
 }

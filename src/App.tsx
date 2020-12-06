@@ -7,6 +7,7 @@ import {useTranslation} from "react-i18next";
 import {IEvent} from "./interfaces/event";
 import Modal from "./components/modal/modal";
 import EventForm from "./forms/eventForm";
+import "react-datepicker/dist/react-datepicker.css";
 
 const App = () => {
   var url = 'http://local.bridge.co.il/backend';
