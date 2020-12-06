@@ -2,9 +2,22 @@ form {
   display: flex;
   max-height: 100%;
 
-  div {
-    flex-grow: 1;
+  div.column {
+
+  }
+
+  div.col-right {
+    width: 30%;
     margin: 0 10px;
+  }
+
+  div.col-left {
+    width: 70%;
+    margin: 0 10px;
+  }
+
+  .checkbox-wrapper {
+    white-space: nowrap;
   }
 
   input[type="checkbox"] {

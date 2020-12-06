@@ -67,52 +67,54 @@ const EventForm = (props: AddEventProp) => {
             <main>
                 <form>
 
-                    <div className={'col-left'}>
+                    <div className={'column col-right'}>
                         <label>  {t('name')}</label>
                         <input type="text" name="name" value={event.name} onChange={handleInputChange}/>
 
-                        <ul style={{marginBottom: 50}}>
-
+                        <div className={'checkbox-wrapper'}>
                             <input type="checkbox" name="is_festival" checked={event.is_festival}
                                    onChange={handleInputChange}/>
                             <label className={'checkbox'}>  {t('is_festival')}</label>
+                        </div>
 
-                            <ul style={{float: "left", marginLeft: 15}}>
-                                <input type="checkbox" name="has_registration_list"
-                                       checked={event.has_registration_list}
-                                       onChange={handleInputChange}/>
-                                <label className={'checkbox'}>  {t('has_registration_list')}</label><br/>
-
-
-                                <input type="checkbox" name="only_members_limit" checked={event.only_members_limit}
-                                       onChange={handleInputChange}/>
-                                <label className={'checkbox'}>  {t('only_members_limit')}</label>
-                            </ul>
-
-                        </ul>
+                        <div className={'checkbox-wrapper'}>
+                            <input type="checkbox" name="has_registration_list"
+                                   checked={event.has_registration_list}
+                                   onChange={handleInputChange}/>
+                            <label className={'checkbox'}>  {t('has_registration_list')}</label><br/>
+                        </div>
+                        <div className={'checkbox-wrapper'}>
+                            <input type="checkbox" name="only_members_limit" checked={event.only_members_limit}
+                                   onChange={handleInputChange}/>
+                            <label className={'checkbox'}>  {t('only_members_limit')}</label>
+                        </div>
 
 
                         <label>  {t('max_participates_limit')}</label>
                         <input type="number" name="max_participates_limit" value={event.max_participates_limit}
                                onChange={handleInputChange}/>
 
-
-                        <input type="checkbox" name="has_age_limit" checked={event.has_age_limit}
-                               onChange={handleInputChange}/>
-                        <label className={'checkbox'}>  {t('has_age_limit')}</label>
+                        <div className={'checkbox-wrapper'}>
+                            <input type="checkbox" name="has_age_limit" checked={event.has_age_limit}
+                                   onChange={handleInputChange}/>
+                            <label className={'checkbox'}>  {t('has_age_limit')}</label>
+                        </div>
 
                         <label>  {t('min_age_limit')}</label>
-                        <input type="number" name="min_age_limit" value={event.min_age_limit} disabled={event.has_age_limit}
+                        <input type="number" name="min_age_limit" value={event.min_age_limit}
+                               disabled={event.has_age_limit}
                                onChange={handleInputChange}/>
 
                         <label>  {t('max_age_limit')}</label>
-                        <input type="number" name="max_age_limit" value={event.max_age_limit} disabled={event.has_age_limit}
+                        <input type="number" name="max_age_limit" value={event.max_age_limit}
+                               disabled={event.has_age_limit}
                                onChange={handleInputChange}/>
 
-
-                        <input type="checkbox" name="has_rank_limit" checked={event.has_rank_limit}
-                               onChange={handleInputChange}/>
-                        <label className={'checkbox'}>  {t('has_rank_limit')}</label>
+                        <div className={'checkbox-wrapper'}>
+                            <input type="checkbox" name="has_rank_limit" checked={event.has_rank_limit}
+                                   onChange={handleInputChange}/>
+                            <label className={'checkbox'}>  {t('has_rank_limit')}</label>
+                        </div>
 
 
                         <label>  {t('max_rank_limit')}</label>
@@ -141,23 +143,27 @@ const EventForm = (props: AddEventProp) => {
                         </label>
 
                     </div>
-                    <div className={'col-right'}>
+                    <div className={'column col-left'}>
 
                         <label>{t('location')} </label>
                         <input type="text" name="location" value={event.location} onChange={handleInputChange}/>
 
-                        <input type="checkbox" name="is_active" checked={event.is_active}
-                               onChange={handleInputChange}/>
-                        <label className={'checkbox'}>  {t('is_active')}</label>
 
+                        <div className={'checkbox-wrapper'}>
+                            <input type="checkbox" name="is_active" checked={event.is_active}
+                                   onChange={handleInputChange}/>
+                            <label className={'checkbox'}>  {t('is_active')}</label>
 
-                        <input type="checkbox" name="is_online" checked={event.is_online}
-                               onChange={handleInputChange}/>
-                        <label className={'checkbox'}>  {t('is_online')}</label>
+                        </div>
+
+                        <div className={'checkbox-wrapper'}>
+                            <input type="checkbox" name="is_online" checked={event.is_online}
+                                   onChange={handleInputChange}/>
+                            <label className={'checkbox'}>  {t('is_online')}</label>
+                        </div>
 
                         <label>{t('schedule')} </label>
                         <Editor
-                            editorStyle={{height: "100px", overflow: "hidden"}}
                             onChange={(e) => handleEditorInputChange({
                                 text: e.blocks[0].text,
                                 name: "schedule",
@@ -166,7 +172,6 @@ const EventForm = (props: AddEventProp) => {
 
                         <label>{t('description.title')} </label>
                         <Editor
-                            editorStyle={{height: "100px", overflow: "hidden"}}
                             onChange={(e) => handleEditorInputChange({
                                 text: e.blocks[0].text,
                                 name: "description",
@@ -179,9 +184,9 @@ const EventForm = (props: AddEventProp) => {
             </main>
 
             <footer className="trb-holder align-right">
-                <button type="button" className="trb trb-secondary lt up"
+                <button type="button" className="button muted-button trb trb-secondary lt up"
                         onClick={() => props.onCancel()}>{t('save')}</button>
-                <button type="button" className="trb trb-primary lt up"
+                <button type="button" className="button muted-button trb trb-primary lt up"
                         onClick={() => props.onSave()}>{t('cancel')}</button>
             </footer>
 
