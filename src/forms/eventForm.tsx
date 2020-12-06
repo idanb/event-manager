@@ -2,6 +2,9 @@ import React, {useState, useRef} from 'react';
 import {useTranslation} from "react-i18next";
 import DatePicker from "react-datepicker";
 import {Editor} from "react-draft-wysiwyg";
+
+
+
 import './eventForm.r.scss';
 
 
@@ -60,9 +63,8 @@ const EventForm = (props: AddEventProp) => {
     }
 
     const handleEditorInputChange = (e: any) => {
-        const value = e.blocks[0].text;
-        console.log(value);
-        const name = e.blocks[0].key === "eocc3" ? "schedule" : "username";
+        const value = e.text
+        const name = e.name
         setEvent({...event, [name]: value})
     }
 
@@ -83,7 +85,7 @@ const EventForm = (props: AddEventProp) => {
                                    onChange={handleInputChange}/>
                             <label className={'checkbox'}>  {t('is_festival')}</label>
 
-                            <ul style={{float: "left", textAlign: "center", marginLeft: 15}}>
+                            <ul style={{float: "left", marginLeft: 15}}>
                                 <input type="checkbox" name="has_registration_list"
                                        checked={event.has_registration_list}
                                        onChange={handleInputChange}/>
@@ -165,16 +167,19 @@ const EventForm = (props: AddEventProp) => {
                         <label className={'checkbox'}>  {t('is_online')}</label>
 
                         <label>{t('schedule')} </label>
-                        {/* <input type="text" name="schedule" value={event.schedule} onChange={handleInputChange}/> */}
-
-                        <Editor editorStyle={{backgroundColor: "gray"}} wrapperStyle={{height: "30%"}}
-                                onChange={handleEditorInputChange}/> <br/> <br/><br/><br/><br/>
-
+                       
+                         <Editor
+                        editorStyle={{height:"100px",overflow:"hidden"}} 
+                        onChange={(e)=>handleEditorInputChange({text:e.blocks[0].text,name:"schedule",value:event.schedule})}/>
+                        
                         <label>{t('description.title')} </label>
-                        {/* <input type="text" name="username" value={event.description} onChange={handleInputChange}/> */}
-                        <Editor editorStyle={{backgroundColor: "gray"}} wrapperStyle={{height: "30%"}}
-                                onChange={handleEditorInputChange}/>
-
+                        <Editor   
+                     
+                        editorStyle={{height:"100px",overflow:"hidden"}} 
+                        onChange={(e)=>handleEditorInputChange({text:e.blocks[0].text,name:"description",value:event.description})}/>
+                    
+                      
+                       
                     </div>
                 </form>
             </main>
