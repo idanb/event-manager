@@ -4,7 +4,6 @@ import DatePicker from "react-datepicker";
 import {Editor} from "react-draft-wysiwyg";
 
 
-
 import './eventForm.r.scss';
 
 
@@ -14,7 +13,6 @@ interface AddEventProp {
 }
 
 const EventForm = (props: AddEventProp) => {
-
     const initialFormState = {
         id: null,
         name: '',
@@ -49,7 +47,6 @@ const EventForm = (props: AddEventProp) => {
     const {t} = useTranslation();
 
     const handleInputChange = (e: any) => {
-        console.log(e);
         const value = (e.target.type === 'checkbox' ? e.target.checked : e.target.value);
         const name = e.target.name;
 
@@ -57,16 +54,12 @@ const EventForm = (props: AddEventProp) => {
             setEvent({...event, ['min_age_limit']: 0})
             setEvent({...event, ['max_age_limit']: 0})
         }
-
-
         setEvent({...event, [name]: value})
-    }
+    };
 
     const handleEditorInputChange = (e: any) => {
-        const value = e.text
-        const name = e.name
-        setEvent({...event, [name]: value})
-    }
+        setEvent({...event, [e.name]: e.text})
+    };
 
     return (
         <>
@@ -167,19 +160,24 @@ const EventForm = (props: AddEventProp) => {
                         <label className={'checkbox'}>  {t('is_online')}</label>
 
                         <label>{t('schedule')} </label>
-                       
-                         <Editor
-                        editorStyle={{height:"100px",overflow:"hidden"}} 
-                        onChange={(e)=>handleEditorInputChange({text:e.blocks[0].text,name:"schedule",value:event.schedule})}/>
-                        
+                        <Editor
+                            editorStyle={{height: "100px", overflow: "hidden"}}
+                            onChange={(e) => handleEditorInputChange({
+                                text: e.blocks[0].text,
+                                name: "schedule",
+                                value: event.schedule
+                            })}/>
+
                         <label>{t('description.title')} </label>
-                        <Editor   
-                     
-                        editorStyle={{height:"100px",overflow:"hidden"}} 
-                        onChange={(e)=>handleEditorInputChange({text:e.blocks[0].text,name:"description",value:event.description})}/>
-                    
-                      
-                       
+                        <Editor
+                            editorStyle={{height: "100px", overflow: "hidden"}}
+                            onChange={(e) => handleEditorInputChange({
+                                text: e.blocks[0].text,
+                                name: "description",
+                                value: event.description
+                            })}/>
+
+
                     </div>
                 </form>
             </main>
