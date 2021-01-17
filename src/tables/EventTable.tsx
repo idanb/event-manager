@@ -6,11 +6,13 @@ import Modal from "../components/modal/modal";
 import EventForm from "../forms/eventForm";
 import PlayerForm from "../forms/playerForm";
 import EditParticipantsForm from "../forms/editParticipantsForm";
+import moment from "moment";
 
 interface EventTableProp {
     events: IEvent[];
     editEvent: (arg0: IEvent) => any;
     deleteEvent: (arg0: any) => any;
+    onRefresh: () => any;
 }
 
 const EventTable = (props: EventTableProp) => {
@@ -21,6 +23,11 @@ const EventTable = (props: EventTableProp) => {
     const [showEditParticipants, setShowEditParticipants] = useState<boolean>(false);
 
     const onSave = () => {
+        props.onRefresh();
+        setShowEditForm(false);
+    };
+    const onCloseModal = () => {
+        setShowEditForm(false);
     };
 
     const editEvent = (event: IEvent) => {
@@ -34,7 +41,7 @@ const EventTable = (props: EventTableProp) => {
         title={t('player_form_title')}
         modalClosed={() => setShowUploadForm(false)}
         visible={showUploadForm}>
-        <PlayerForm onSave={onSave} onCancel={onSave}/>
+        <PlayerForm onSave={props.onRefresh} onCancel={onSave}/>
     </Modal> : null;
 
     const showEditFormModal = () => showEditForm ? <Modal
@@ -43,7 +50,7 @@ const EventTable = (props: EventTableProp) => {
         title={t('edit_form_title')}
         modalClosed={() => setShowEditForm(false)}
         visible={showEditForm}>
-        <PlayerForm onSave={onSave} onCancel={onSave}/>
+        <EventForm onSave={onSave} onCancel={onCloseModal} event={selectedEvent}></EventForm>
     </Modal> : null;
 
     const showEditParticipantsModalAction = (event: IEvent) => {
@@ -71,6 +78,7 @@ const EventTable = (props: EventTableProp) => {
                 <tr>
                     <th>{t('name')}</th>
                     <th>{t('date')}</th>
+                    <th>{t('registration_deadline')}</th>
                     <th>{t('price')}</th>
                     <th>{t('guest_extra_price')}</th>
                     <th>{t('type')}</th>
@@ -86,38 +94,35 @@ const EventTable = (props: EventTableProp) => {
                             const isOverdue = new Date(event.date).getTime() < new Date().getTime();
 
                             return (<tr key={event.id} className={`${isOverdue ? 'red' : ''}`}>
-                                <td>{event.name}</td>
-                                <td>{event.date}</td>
-                                <td>{event.price}</td>
-                                <td>{event.guest_extra_price}</td>
-                                <td>{t(EventTypes[+event.event_type])}</td>
-                                <td className={`${event.is_festival}-sign`}></td>
-                                <td className={`${event.is_online}-sign`}></td>
-                                <td className={`${event.is_active}-sign`}></td>
-                                <td>
+                                <td><a href={'https://main.bridge.co.il/payments/payments_dev.php/competitions/event/' + event.id} target={'_blank'}>{event.name}</a></td>
+                                <td>{moment(event.date).format('DD-MM-yyyy hh:mm').toString()}</td>
+                                <td className={'white-space'}>{moment(event.registration_deadline).format('DD-MM-yyyy').toString()}</td>
+                                <td className={'text-center'}>{event.price}</td>
+                                <td className={'text-center'}>{event.guest_extra_price}</td>
+                                <td className={'text-center'}>{t(EventTypes[+event.event_type])}</td>
+                                <td className={`${event.is_festival === '1'}-sign`}></td>
+                                <td className={`${event.is_online === '1'}-sign`}></td>
+                                <td className={`${event.is_active === '1'}-sign`}></td>
+                                <td className={'actions-cell'}>
                                     <button
                                         onClick={() => editEvent(event)}
-                                        className="button muted-button"
-                                    >
+                                        className="button muted-button">
                                         {t('edit')}
                                     </button>
                                     <button
                                         onClick={() => props.deleteEvent(event.id)}
-                                        className="button muted-button"
-                                    >
+                                        className="button muted-button">
                                         {t('delete')}
                                     </button>
                                     {/*{event.has_registration_list}*/}
                                     <button
                                         onClick={() => showEditParticipantsModalAction(event)}
-                                        className="button muted-button"
-                                    >
+                                        className="button muted-button">
                                         {t('edit_players')}
                                     </button>
-                                    {event.has_registration_list && <button
+                                    {event.has_registration_list === '1' && <button
                                         onClick={() => setShowUploadForm(true)}
-                                        className="button muted-button"
-                                    >
+                                        className="button muted-button">
                                         {t('add_players')}
                                     </button>}
                                 </td>

@@ -9,90 +9,103 @@ import {IEvent} from "./interfaces/event";
 import Modal from "./components/modal/modal";
 import EventForm from "./forms/eventForm";
 import "react-datepicker/dist/react-datepicker.css";
+import "primeicons/primeicons.css"
 
 const App = () => {
-  var url = 'http://local.bridge.co.il/payments/payments_dev.php/competitions/events';
-  const { t, i18n } = useTranslation();
-
-  Axios.post(url, {
-    paction: 'get-rounds-by-fxilter',
-    clubs: 0,
-    year: 2020,
-    month: 10}).then((res)=>{
-    console.log(res);
-  })
-
-  const initialFormState = { id: '', name: '', description: '' };
-  const [ showForm, setShowForm ] = useState<boolean>(false);
-
-  const test = () => {
-    return 's'
-  }
-
-  const showFormModal = () => showForm ? <Modal
-      className='ic-modal'
-      width={"80%"}
-      title={t('form_title')}
-      modalClosed={() => setShowForm(false)}
-      visible={showForm}>
-    <EventForm onSave={test} onCancel={test}></EventForm>
-  </Modal> : null;
+    require('dotenv').config();
+    console.log(process.env.NODE_ENV);
+    const url = process.env.NODE_ENV === 'development' ? 'http://bridge.co.il:8888/payments/competitions/events' : 'https://main.bridge.co.il/payments/competitions/events';
+    // const urlDebug = 'http://local.bridge.co.il/payments/payments_dev.php/competitions/events';
+    // const prod = 'https://main.bridge.co.il/payments/competitions/events';
 
 
-  // Setting state
-  const [ events, setEvents ] = useState<IEvent[]>([])
-  const [ currentEvent, setCurrentEvent ] = useState(initialFormState)
-  const [ editing, setEditing ] = useState(false);
+    const {t, i18n} = useTranslation();
+    const initialFormState = {id: '', name: '', description: ''};
+    const [showForm, setShowForm] = useState<boolean>(false);
 
-  useEffect(()=>{
-    const events = data.sort(function(a,b){
-      // Turn your strings into dates, and then subtract them
-      // to get a value that is either negative, positive, or zero.
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
-    });
+    const onCloseModal = () => {
+        setShowForm(false);
+    };
 
-    setEvents(events)
-  }, []);
+    const onSave = () => {
+        setShowForm(false);
+        refreshEvents();
+    };
 
-  // CRUD operations
-  const addEvent = (event: IEvent) => {
-    event.id = events.length + 1;
-    setEvents([ ...events, event ]);
-  }
+    const showFormModal = () => showForm ? <Modal
+        className='ic-modal'
+        width={"80%"}
+        title={t('form_title')}
+        modalClosed={() => setShowForm(false)}
+        visible={showForm}>
+        <EventForm onSave={onSave} onCancel={() => onCloseModal()}></EventForm>
+    </Modal> : null;
 
-  const deleteEvent = (id: number) => {
-    setEditing(false);
-    setEvents(events.filter(user => user.id !== id));
-  }
 
-  const updateEvent = (id: number, updatedEvent: IEvent) => {
-    setEditing(false);
-    setEvents(events.map(event => (event.id === id ? updatedEvent : event)));
-  }
+    // Setting state
+    const [events, setEvents] = useState<IEvent[]>([])
+    const [currentEvent, setCurrentEvent] = useState(initialFormState)
+    const [editing, setEditing] = useState(false);
 
-  const editEvent = (event: IEvent) => {
-    // setEditing(true);
-    // setCurrentEvent({ id: event.id, name: event.name, description: event.description });
-  }
+    useEffect(() => {
+        refreshEvents();
+    }, []);
 
-  if(!events) return <span>loading...</span>;
-  return (
-      <div className="container">
-        {showFormModal()}
-        <h1> {t('system_name')} </h1>
-        <button
-            onClick={() => setShowForm(true)}
-            className="button muted-button margin-bottom-10"
-        >
-          {t('add')}
-        </button>
-        <div className="flex-row">
-          <div className="flex-large">
-            <EventTable events={events} editEvent={editEvent} deleteEvent={deleteEvent} />
-          </div>
+
+    const refreshEvents = () => {
+        Axios.get(url).then((res) => {
+            res.data.sort(function (a, b) {
+                return new Date(a.date).getTime() - new Date(b.date).getTime();
+            });
+            setEvents(res.data)
+        })
+    }
+
+
+    // CRUD operations
+    const addEvent = (event: IEvent) => {
+        event.id = events.length + 1;
+        setEvents([...events, event]);
+    }
+
+    const deleteEvent = (id: number) => {
+        debugger;
+        Axios.delete(url, {data: id}).then((res) => {
+            console.log(res);
+        });
+        setEditing(false);
+        setEvents(events.filter(user => user.id !== id));
+    }
+
+    const updateEvent = (id: number, updatedEvent: IEvent) => {
+        setEditing(false);
+        setEvents(events.map(event => (event.id === id ? updatedEvent : event)));
+    }
+
+    const editEvent = (event: IEvent) => {
+        // setEditing(true);
+        // setCurrentEvent({ id: event.id, name: event.name, description: event.description });
+    }
+
+    if (!events) return <span>loading...</span>;
+    return (
+        <div className="container">
+            {showFormModal()}
+            <h1> {t('system_name')} </h1>
+            <button
+                onClick={() => setShowForm(true)}
+                className="button muted-button margin-bottom-10"
+            >
+                {t('add')}
+            </button>
+            <div className="flex-row">
+                <div className="flex-large">
+                    <EventTable onRefresh={refreshEvents} events={events} editEvent={editEvent}
+                                deleteEvent={deleteEvent}/>
+                </div>
+            </div>
         </div>
-      </div>
-  )
+    )
 }
 
 export default App;

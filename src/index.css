@@ -43,6 +43,11 @@ table td{
   text-align: right;
 }
 
-table tr.red td:first-child{
-  color: #ff9266;
+table tr td:first-child a{
+  text-decoration: underline;
+
+}
+table tr.red td:first-child a{
+  color: #ff9266 !important;
+  text-decoration: underline;
 }
