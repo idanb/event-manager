@@ -3,7 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import './App.scss';
 import EventTable from './tables/EventTable'
 import Axios from "axios";
-import data from './tables/comp.json'
 import {useTranslation} from "react-i18next";
 import {IEvent} from "./interfaces/event";
 import Modal from "./components/modal/modal";
@@ -13,10 +12,7 @@ import "primeicons/primeicons.css"
 
 const App = () => {
     require('dotenv').config();
-    console.log(process.env.NODE_ENV);
-    const url = process.env.NODE_ENV === 'development' ? 'http://bridge.co.il:8888/payments/competitions/events' : 'https://main.bridge.co.il/payments/competitions/events';
-    // const urlDebug = 'http://local.bridge.co.il/payments/payments_dev.php/competitions/events';
-    // const prod = 'https://main.bridge.co.il/payments/competitions/events';
+    const url = process.env.REACT_APP_DOMAIN || '';
 
 
     const {t, i18n} = useTranslation();

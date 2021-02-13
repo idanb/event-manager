@@ -1,7 +1,7 @@
 export interface IEvent {
     id: number | string;
     name: string;
-    date: string | number | Date;
+    date: string;
     event_type: string;
     is_festival: boolean | string;
     only_members_limit: string;

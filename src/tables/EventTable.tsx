@@ -16,7 +16,7 @@ interface EventTableProp {
 }
 
 const EventTable = (props: EventTableProp) => {
-    const {t, i18n} = useTranslation();
+    const {t} = useTranslation();
     const [selectedEvent, setSelectedEvent] = useState<IEvent>();
     const [showEditForm, setShowEditForm] = useState<boolean>(false);
     const [showUploadForm, setShowUploadForm] = useState<boolean>(false);
@@ -94,7 +94,8 @@ const EventTable = (props: EventTableProp) => {
                             const isOverdue = new Date(event.date).getTime() < new Date().getTime();
 
                             return (<tr key={event.id} className={`${isOverdue ? 'red' : ''}`}>
-                                <td><a href={'https://main.bridge.co.il/payments/payments_dev.php/competitions/event/' + event.id} target={'_blank'}>{event.name}</a></td>
+                                <td><a href={'' + process.env.REACT_APP_DOMAIN_DIRECT + event.id}
+                                       target={'_blank'}>{event.name}</a></td>
                                 <td>{moment(event.date).format('DD-MM-yyyy hh:mm').toString()}</td>
                                 <td className={'white-space'}>{moment(event.registration_deadline).format('DD-MM-yyyy').toString()}</td>
                                 <td className={'text-center'}>{event.price}</td>
