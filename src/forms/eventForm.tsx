@@ -19,7 +19,7 @@ const EventForm = (props: EventFormProp) => {
     const url = process.env.REACT_APP_DOMAIN_DEV || '';
     const initialFormState = {
         name: props.event?.name || '',
-        event_type: props.event?.event_type || '3',
+        event_type: props.event?.event_type || '2',
         date: props.event?.date ? new Date(props.event?.date) : new Date(),
         is_festival: props.event?.is_festival === '1',
         only_members_limit: props.event?.only_members_limit === '1',
@@ -51,6 +51,7 @@ const EventForm = (props: EventFormProp) => {
 
     };
     const [eventForm, setEventForm] = useState<any>(initialFormState);
+    const [titles, setTitles] = useState<any>([]);
     const [scheduleState, setScheduleState] = useState(EditorState.createWithContent(ContentState.createFromBlockArray(
         convertFromHTML(props.event?.schedule || '')
     )));
@@ -62,11 +63,18 @@ const EventForm = (props: EventFormProp) => {
     const [endDate, setEndDate] = useState(new Date());
 
     useEffect(() => {
+        getTitles();
         if (props.event?.date) {
             setStartDate(eventForm.date);
             setEndDate(eventForm.registration_deadline);
         }
     }, []);
+
+    const getTitles = () => {
+        axios.get('https://main.bridge.co.il/payments/competitions/titles').then((res) => {
+            setTitles(res.data);
+        })
+    }
 
 
     const handleInputChange = (e: any) => {
@@ -96,7 +104,7 @@ const EventForm = (props: EventFormProp) => {
                     break;
             }
         });
-        values['date'] = startDate.toISOString().slice(0, 19).replace('T', ' ');
+        values['date'] = new Date(startDate.getTime() - (startDate.getTimezoneOffset() * 60000)).toISOString().slice(0, 19).replace('T', ' ');
         values['registration_deadline'] = endDate.toISOString().slice(0, 19).replace('T', ' ');
         values['description'] = convertToHTML(descriptionState.getCurrentContent());
         values['schedule'] = convertToHTML(scheduleState.getCurrentContent());
@@ -134,41 +142,27 @@ const EventForm = (props: EventFormProp) => {
                 <form onSubmit={handleSubmit}>
                     <div className={'flex'}>
                         <div className={'column col-right'}>
+
+                            <div className={'short-input'}>
+                                <label>
+                                    {t('type')}
+                                </label>
+                                <select name="event_type" value={eventForm.event_type} onChange={handleInputChange}>
+                                    <option value="1">{t('event_type_single')}</option>
+                                    <option value="2">{t('event_type_couple')}</option>
+                                    <option value="3">{t('event_type_group')}</option>
+                                    <option value="4">{t('event_type_event')}</option>
+                                </select>
+                            </div>
+
+                            <div className={'short-input'}>
+                                <label>{t('location')} </label>
+                                <input type="text" name="location" value={eventForm.location}
+                                       onChange={handleInputChange}/>
+                            </div>
+
                             <label>  {t('name')}</label>
                             <input type="text" name="name" value={eventForm.name || ''} onChange={handleInputChange}/>
-
-
-                            <div className={'checkbox-wrapper'}>
-                                <input type="checkbox" name="is_festival" checked={eventForm.is_festival}
-                                       onChange={handleInputChange}/>
-                                <label className={'checkbox'}>  {t('is_festival')}</label>
-                            </div>
-
-                            <div className={'checkbox-wrapper'}>
-                                <input type="checkbox" name="has_registration_list"
-                                       checked={eventForm.has_registration_list}
-                                       onChange={handleInputChange}/>
-                                <label className={'checkbox'}>  {t('has_registration_list')}</label><br/>
-                            </div>
-
-                            <div className={'checkbox-wrapper'}>
-                                <input type="checkbox" name="only_members_limit" checked={eventForm.only_members_limit}
-                                       onChange={handleInputChange}/>
-                                <label className={'checkbox'}>  {t('only_members_limit')}</label>
-                            </div>
-
-                            <div className={'checkbox-wrapper'}>
-                                <input type="checkbox" name="is_active" checked={eventForm.is_active}
-                                       onChange={handleInputChange}/>
-                                <label className={'checkbox'}>  {t('is_active')}</label>
-                            </div>
-
-                            <div className={'checkbox-wrapper'}>
-                                <input type="checkbox" name="is_online" checked={eventForm.is_online}
-                                       onChange={handleInputChange}/>
-                                <label className={'checkbox'}>  {t('is_online')}</label>
-                            </div>
-
 
                             <div className={'short-input'}>
                                 <label>  {t('date')}</label>
@@ -200,22 +194,35 @@ const EventForm = (props: EventFormProp) => {
                             </div>
 
 
-                            <div className={'short-input'}>
-                                <label>
-                                    {t('type')}
-                                </label>
-                                <select name="event_type" value={eventForm.event_type} onChange={handleInputChange}>
-                                    <option value="1">{t('event_type_single')}</option>
-                                    <option value="2">{t('event_type_couple')}</option>
-                                    <option value="3">{t('event_type_group')}</option>
-                                    <option value="4">{t('event_type_event')}</option>
-                                </select>
+                            <div className={'checkbox-wrapper'}>
+                                <input type="checkbox" name="is_festival" checked={eventForm.is_festival}
+                                       onChange={handleInputChange}/>
+                                <label className={'checkbox'}>  {t('is_festival')}</label>
                             </div>
 
-                            <div className={'short-input'}>
-                                <label>{t('location')} </label>
-                                <input type="text" name="location" value={eventForm.location}
+                            <div className={'checkbox-wrapper'}>
+                                <input type="checkbox" name="has_registration_list"
+                                       checked={eventForm.has_registration_list}
                                        onChange={handleInputChange}/>
+                                <label className={'checkbox'}>  {t('has_registration_list')}</label><br/>
+                            </div>
+
+                            <div className={'checkbox-wrapper'}>
+                                <input type="checkbox" name="only_members_limit" checked={eventForm.only_members_limit}
+                                       onChange={handleInputChange}/>
+                                <label className={'checkbox'}>  {t('only_members_limit')}</label>
+                            </div>
+
+                            <div className={'checkbox-wrapper'}>
+                                <input type="checkbox" name="is_active" checked={eventForm.is_active}
+                                       onChange={handleInputChange}/>
+                                <label className={'checkbox'}>  {t('is_active')}</label>
+                            </div>
+
+                            <div className={'checkbox-wrapper'}>
+                                <input type="checkbox" name="is_online" checked={eventForm.is_online}
+                                       onChange={handleInputChange}/>
+                                <label className={'checkbox'}>  {t('is_online')}</label>
                             </div>
 
                             <div className={'short-input'}>
@@ -282,19 +289,26 @@ const EventForm = (props: EventFormProp) => {
                             </div>
 
                             <div className={'short-input'}>
-                                <label>  {t('max_rank_limit')}</label>
-                                <input type="number" name="max_rank_limit" value={eventForm.max_rank_limit}
-                                       className={`${eventForm.has_rank_limit ? '' : 'disabled'}`}
-                                       disabled={!eventForm.has_rank_limit}
-                                       onChange={handleInputChange}/>
+                                <label>  {t('min_rank_limit')}</label>
+                                <select name="min_rank_limit" value={eventForm.min_rank_limit}
+                                        className={`${eventForm.has_rank_limit ? '' : 'disabled'}`}
+                                        disabled={!eventForm.has_rank_limit}
+                                        onChange={handleInputChange}>
+                                    {titles.map((t) => <option value={t.value}>{t.hebrew_name}</option>
+                                    )}
+                                </select>
                             </div>
 
                             <div className={'short-input'}>
-                                <label>  {t('min_rank_limit')}</label>
-                                <input type="number" name="min_rank_limit" value={eventForm.min_rank_limit}
-                                       className={`${eventForm.has_rank_limit ? '' : 'disabled'}`}
-                                       disabled={!eventForm.has_rank_limit}
-                                       onChange={handleInputChange}/>
+                                <label>  {t('max_rank_limit')}</label>
+                                <select name="max_rank_limit" value={eventForm.max_rank_limit}
+                                        className={`${eventForm.has_rank_limit ? '' : 'disabled'}`}
+                                        disabled={!eventForm.has_rank_limit}
+                                        onChange={handleInputChange}>
+                                    {titles.map((t) => <option value={t.value}>{t.hebrew_name}</option>
+                                    )}
+                                </select>
+
                             </div>
 
                         </div>
