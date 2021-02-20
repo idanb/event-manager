@@ -1,3 +1,9 @@
+# Event manager
+
+CRUD app of rich functionality to manage events on mysql DB
+include complex form with datepicker (react-datepicker), wysiwyg (draft-js, react-draft-wysiwyg)
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
