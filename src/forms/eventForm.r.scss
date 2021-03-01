@@ -42,6 +42,11 @@ form {
   label.checkbox {
     display: inline;
     margin: 0 8px;
+    color: #1cb864;
+  }
+
+  label {
+    color: firebrick;
   }
 
   .btn-wrapper {
@@ -49,6 +54,12 @@ form {
     top: 6%;
     right: 344px;
     padding: 10px 20px;
+  }
+
+  .name-input {
+    font-size: 16px;
+    background: #e6f38a;
+    font-weight: 500;
   }
 
   .short-input {
@@ -59,5 +70,15 @@ form {
       width: 88%;
       display: inline-block;
     }
+  }
+
+  .price-input {
+    width: 100px !important;
+    margin-left: 5px;
+  }
+
+
+  input, select {
+    background: #f0f0f0;
   }
 }

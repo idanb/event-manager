@@ -91,12 +91,15 @@ const EventTable = (props: EventTableProp) => {
                 <tbody>
                 {props.events.length > 0 ? (
                     props.events.map(event => {
-                            const isOverdue = new Date(event.date).getTime() < new Date().getTime();
+                        var now = new Date();
+                        now.setHours(0,0,0,0);
+
+                            const isOverdue = new Date(event.date) < now;
 
                             return (<tr key={event.id} className={`${isOverdue ? 'red' : ''}`}>
                                 <td><a href={'' + process.env.REACT_APP_DOMAIN_DIRECT + event.id}
                                        target={'_blank'}>{event.name}</a></td>
-                                <td>{moment(event.date).format('DD-MM-yyyy hh:mm').toString()}</td>
+                                <td>{moment(event.date).format('DD-MM-yyyy hh:mm').toString()} {event.date}</td>
                                 <td className={'white-space'}>{moment(event.registration_deadline).format('DD-MM-yyyy').toString()}</td>
                                 <td className={'text-center'}>{event.price}</td>
                                 <td className={'text-center'}>{event.guest_extra_price}</td>

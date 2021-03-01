@@ -162,7 +162,8 @@ const EventForm = (props: EventFormProp) => {
                             </div>
 
                             <label>  {t('name')}</label>
-                            <input type="text" name="name" value={eventForm.name || ''} onChange={handleInputChange}/>
+                            <input className={'name-input'} type="text" name="name" value={eventForm.name || ''}
+                                   onChange={handleInputChange}/>
 
                             <div className={'short-input'}>
                                 <label>  {t('date')}</label>
@@ -228,15 +229,18 @@ const EventForm = (props: EventFormProp) => {
                             <div className={'short-input'}>
 
                                 <label>  {t('price')}</label>
-                                <input type="number" name="price" value={eventForm.price}
+                                <input type="number" name="price" value={eventForm.price} className={'price-input'}
                                        onChange={handleInputChange}/>
+                                       ש״ח
                             </div>
 
                             <div className={'short-input'}>
 
                                 <label>  {t('guest_extra_price')}</label>
                                 <input type="number" name="guest_extra_price" value={eventForm.guest_extra_price}
+                                       className={'price-input'}
                                        onChange={handleInputChange}/>
+                                ש״ח
                             </div>
 
                             <h4>{t('limitations')}</h4>
@@ -314,16 +318,18 @@ const EventForm = (props: EventFormProp) => {
                         </div>
                         <div className={'column col-left'}>
 
+                            <label>{t('description.title')} </label>
+                            <Editor
+                                editorState={descriptionState}
+                                onEditorStateChange={onDescriptionStateChange}/>
+
 
                             <label>{t('schedule')} </label>
                             <Editor
                                 editorState={scheduleState}
                                 onEditorStateChange={onScheduleStateChange}/>
 
-                            <label>{t('description.title')} </label>
-                            <Editor
-                                editorState={descriptionState}
-                                onEditorStateChange={onDescriptionStateChange}/>
+
                             <label>  {t('regulations_file_link')}</label>
                             <input type="text" name="regulations_file_link" value={eventForm.regulations_file_link}
                                    onChange={handleInputChange}/>
