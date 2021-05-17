@@ -2,12 +2,9 @@ import React, {useEffect, useState} from 'react'
 import {useTranslation} from "react-i18next";
 import Axios from "axios";
 import {IPlayerParticipation} from "../interfaces/playerParticipation";
-
 import {Table} from "react-bootstrap";
-// Bootstrap CSS
-import "bootstrap/dist/css/bootstrap.min.css";
-// To make rows collapsible
-import "bootstrap/js/src/collapse.js";
+import EditableLabel from 'react-inline-editing';
+
 
 interface EditParticipantsFormProps {
     event: any;
@@ -16,119 +13,169 @@ interface EditParticipantsFormProps {
 }
 
 const EditParticipantsForm = (props: EditParticipantsFormProps) => {
-
-    var url = 'http://local.bridge.co.il/payments/competitions/participants';
+    /* eslint-disable */
+    const url = 'https://main.bridge.co.il/payments/competitions' + '/participants' || '';
+    const url2 = 'https://main.bridge.co.il/payments/payments_dev.php/competitions' + '/participants' || '';
     const {t, i18n} = useTranslation();
     const [players, setPlayers] = useState<IPlayerParticipation[]>([]);
+    const [visible, setVisible] = useState<boolean[]>([]);
+    const [formVisible, setFormVisible] = useState<boolean>(false);
+    const [playerForm, setPlayerForm] = useState<any>([{bbo: '', name: '', number: ''}]);
 
 
     useEffect(() => {
+        refreshPlayers()
 
+    }, []);
+
+    const refreshPlayers = () => {
         Axios.get(`${url}?eventType=${props.event.event_type}&event=${props.event.id}`).then((res) => {
             if (res.data && res.data.length) {
+                debugger;
                 setPlayers(res.data);
+                const visibleArr: boolean[] = [];
+                for (let i = 0; i < res.data.length; ++i) {
+                    visibleArr[i] = false;
+                }
+                setVisible(visibleArr);
             }
         })
+    }
 
-        // id: number | string;
-        // event_id: number;
-        // registration_time: string;
-        // event_type: string;
-        // is_festival: boolean | string;
-        // status: boolean | string;
-        // player1_id: string;
-        // player1_name: string;
-        // player1_bbo: string;
-        // player2_id: string;
-        // player2_name: string;
-        // player2_bbo: string;
-        // photo_approval: boolean;
-        // payment_amount: number;
-        // notes: string;
-        // receipt: string;
+    const updateFieldChanged = (index, e) => {
+        console.log('index: ' + index);
+        console.log('property name: ' + e.target.name);
 
-    }, [])
+        let newArr = [...playerForm]; // copying the old datas array
+        newArr[index][e.target.name] = e.target.value; // replace e.target.value with whatever you want to change it to
+
+        setPlayerForm(newArr); // ??
+    }
+
+
+    const getPlayerForm = () => {
+        // setPlayerForm([{bbo:'', name:'', number:''}]);
+        const index = 0;
+        return (<tr>
+            <td><input type="text" name={'number'} required placeholder={'מספר חבר'}
+                       onChange={e => updateFieldChanged(index, e)} value={playerForm[0].number}/>
+            </td>
+            <td><input type="text" name={'name'} required placeholder={'שם'}
+                       onChange={e => updateFieldChanged(index, e)} value={playerForm[0].name}/></td>
+            <td><input type="text" name={'bbo'} placeholder={'bbo'} onChange={e => updateFieldChanged(index, e)}
+                       value={playerForm[0].bbo}/></td>
+            <td>
+                <button onClick={onSaveRecord}>{t('שמירה')}</button>
+            </td>
+
+        </tr>);
+    }
+
+    const onSaveRecord = (e) => {
+        e.preventDefault();
+        console.log(playerForm);
+        const req = {
+            players: playerForm,
+            event_id: props.event.id
+        }
+        Axios
+            .post(url2, req)
+            .then(res => {
+                props.onSave();
+                setFormVisible(false);
+                refreshPlayers();
+            })
+            .catch(err => alert('שמירה נכשלה'));
+    }
+
+    const onUpdateRecord = (id, e, state) => {
+        e.preventDefault();
+        Axios.delete(`${url2}?player_id=${id}&event_type=${props.event.event_type}&state=${state === '1' ? '0' : '1'}`).then((res) => {
+            alert('רישום עודכן');
+            refreshPlayers();
+        })
+    }
+
+    const _handleFocus = (id, text) => {
+        console.log('Focused with text: ' + text);
+    }
+
+    const _handleFocusOut = (id, text) => {
+        Axios.put(`${url2}?player_id=${id}`, {text}).then((res) => {
+            alert('   רשומה עודכנה');
+        })
+    }
+
     return (
         <>
             <main>
+                <button
+                    onClick={() => setFormVisible(!formVisible)}>{t(!formVisible ? 'add_players_manual' : 'show_players_table')}</button>
                 <form>
-                    <Table striped bordered hover>
-                        <thead>
+                    <Table className={'edit-players'}>
+                        {!formVisible && <thead>
                         <tr>
                             <th>{t('participation_id')}</th>
                             <th>{t('registration_time')}</th>
-                            <th>{t('payment_amount')}</th>
                             <th>{t('notes')}</th>
-                            <th>{t('receipt')}</th>
+                            <th>{t('number')}</th>
+                            <th>{t('name')}</th>
+                            <th>{t('bbo')}</th>
                             <th>{t('payment_amount')}</th>
+                            <th>{t('canceled')}</th>
                             <th>{t('actions')}</th>
                         </tr>
-                        </thead>
+                        </thead>}
                         <tbody>
-                        {players?.map((p) => {
-                            return (<>
-                                    <tr key={p.id} className={``}
-                                        data-toggle="collapse"
-                                        data-target={`.multi-collapse${p.id}`}
-                                        aria-controls={`multiCollapse${p.id}`}>
-                                        <td>{p.id}</td>
+                        {!formVisible && players?.map((p, index) => {
+                            let indexTemp = 1;
+                            console.log(p['player' + indexTemp + '_name']);
+                            while (p['player' + indexTemp + '_name']) {
+                                if (p['player' + indexTemp + '_name']) {
+                                    return (<tr key={p.id} className={``}>
+                                        <td>{p.id} </td>
                                         <td>{p.registration_time}</td>
+                                        <td>
+
+                                            <EditableLabel text={p.notes || ' none'}
+                                                           labelClassName='myLabelClass'
+                                                           inputClassName='myInputClass'
+                                                           inputWidth='200px'
+                                                           inputHeight='25px'
+                                                           labelPlaceHolder={t('non_notes')}
+                                                           inputMaxLength='50'
+                                                           labelFontWeight='bold'
+                                                           inputFontWeight='bold'
+                                                           onFocus={(text) => _handleFocus(p.id, text)}
+                                                           onFocusOut={(text) => _handleFocusOut(p.id, text)}
+                                            />
+
+                                        </td>
+                                        <td>{p['player' + indexTemp + '_num']}</td>
+                                        <td>{p['player' + indexTemp + '_name']}</td>
+                                        <td>{p['player' + indexTemp + '_bbo']}</td>
                                         <td>{p.payment_amount}</td>
-                                        <td>{p.notes}</td>
-                                        <td>{p.receipt}</td>
-                                        <td>{p.payment_amount}</td>
-                                        <td>{t('press_to_show')}</td>
-                                    </tr>
-                                    <tr className={`collapse multi-collapse${p.id}`}
-                                        id={`multiCollapse${p.id}`}>
-                                        <td>{p.player1_id}</td>
-                                        <td>{p.player1_name}</td>
-                                        <td>{p.player1_bbo}</td>
-                                    </tr>
-                                </>
-                            );
+                                        <td>{p.is_canceled === '1' ? ' כן' : 'לא'}</td>
+                                        <td>
+
+                                            {p.is_canceled === '0' && <button
+                                                onClick={(e) => onUpdateRecord(p.id, e, p.is_canceled)}>{t('cancel_registration')}</button>}
+                                            {p.is_canceled === '1' && <button
+                                                onClick={(e) => onUpdateRecord(p.id, e, p.is_canceled)}>{t('approve_registration')}</button>}
+                                        </td>
+                                    </tr>);
+                                }
+                                indexTemp++;
+                            }
                         })}
-                        {players.length === 0 && <span>אין משתתפים</span>}
+                        {players.length === 0 && <tr>
+                            <td>no players</td>
+                        </tr>}
+                        {formVisible && getPlayerForm()}
                         </tbody>
                     </Table>
                 </form>
             </main>
-
-            {/*<Table striped bordered hover>*/}
-            {/*    <thead>*/}
-            {/*    <tr>*/}
-            {/*        <th>#</th>*/}
-            {/*        <th>Name</th>*/}
-            {/*        <th>Email</th>*/}
-            {/*    </tr>*/}
-            {/*    </thead>*/}
-            {/*    <tbody>*/}
-            {/*    <tr*/}
-            {/*        data-toggle="collapse"*/}
-            {/*        data-target=".multi-collapse1"*/}
-            {/*        aria-controls="multiCollapseExample1"*/}
-            {/*    >*/}
-            {/*        <td>1</td>*/}
-            {/*        <td>TEST 123</td>*/}
-            {/*        <td>test123@test.com</td>*/}
-            {/*    </tr>*/}
-
-            {/*    <tr*/}
-            {/*        data-toggle="collapse"*/}
-            {/*        data-target=".multi-collapse2"*/}
-            {/*        aria-controls="multiCollapseExample2"*/}
-            {/*    >*/}
-            {/*        <td>2</td>*/}
-            {/*        <td>TEST 456</td>*/}
-            {/*        <td>test456@test.com</td>*/}
-            {/*    </tr>*/}
-            {/*    <tr className="collapse multi-collapse2" id="multiCollapseExample2">*/}
-            {/*        <td>Child col 1</td>*/}
-            {/*        <td>Child col 2</td>*/}
-            {/*        <td>Child col 3</td>*/}
-            {/*    </tr>*/}
-            {/*    </tbody>*/}
-            {/*</Table>*/}
         </>
     )
 }

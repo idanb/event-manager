@@ -12,7 +12,7 @@ import "primeicons/primeicons.css"
 
 const App = () => {
     require('dotenv').config();
-    const url = process.env.REACT_APP_DOMAIN || '';
+    const url = process.env.REACT_APP_DOMAIN + '/events' || '';
 
 
     const {t, i18n} = useTranslation();
@@ -53,7 +53,7 @@ const App = () => {
             res.data.sort(function (a, b) {
                 return new Date(a.date).getTime() - new Date(b.date).getTime();
             });
-            setEvents(res.data)
+            setEvents(res.data);
         })
     }
 

@@ -16,7 +16,7 @@ interface EventFormProp {
 }
 
 const EventForm = (props: EventFormProp) => {
-    const url = process.env.REACT_APP_DOMAIN_DEV || '';
+    const url = process.env.REACT_APP_DOMAIN_DEV + '/events' || '';
     const initialFormState = {
         name: props.event?.name || '',
         event_type: props.event?.event_type || '2',

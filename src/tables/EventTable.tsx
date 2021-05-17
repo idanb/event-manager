@@ -38,7 +38,7 @@ const EventTable = (props: EventTableProp) => {
     const showFormModal = () => showUploadForm ? <Modal
         className='ic-modal'
         width={"80%"}
-        title={t('player_form_title')}
+        title={t('edit_players_title')}
         modalClosed={() => setShowUploadForm(false)}
         visible={showUploadForm}>
         <PlayerForm onSave={props.onRefresh} onCancel={onSave}/>
@@ -61,7 +61,7 @@ const EventTable = (props: EventTableProp) => {
     const showEditParticipantsModal = () => showEditParticipants ? <Modal
         className='ic-modal'
         width={"80%"}
-        title={t('edit_form_title')}
+        title={t('edit_players_title')}
         modalClosed={() => setShowEditParticipants(false)}
         visible={showEditParticipants}>
         <EditParticipantsForm event={selectedEvent} onSave={onSave} onCancel={onSave}/>
@@ -97,7 +97,7 @@ const EventTable = (props: EventTableProp) => {
                             const isOverdue = new Date(event.date) < now;
 
                             return (<tr key={event.id} className={`${isOverdue ? 'red' : ''}`}>
-                                <td><a href={'' + process.env.REACT_APP_DOMAIN_DIRECT + event.id}
+                                <td><a href={'' + process.env.REACT_APP_DOMAIN_DIRECT + '/events/' + event.id}
                                        target={'_blank'}>{event.name}</a></td>
                                 <td>{moment(event.date).format('DD-MM-yyyy hh:mm').toString()} {event.date}</td>
                                 <td className={'white-space'}>{moment(event.registration_deadline).format('DD-MM-yyyy').toString()}</td>

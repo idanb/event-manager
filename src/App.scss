@@ -41,9 +41,15 @@
   display: none !important;
 }
 
-.actions-cell{
+.actions-cell {
   background-color: rgba(69, 190, 255, 0.93);
   white-space: nowrap;
+}
+
+.edit-players {
+  th {
+    text-align: right;
+  }
 }
 
 
