@@ -4,6 +4,7 @@ import Axios from "axios";
 import {IPlayerParticipation} from "../interfaces/playerParticipation";
 import {Table} from "react-bootstrap";
 import EditableLabel from 'react-inline-editing';
+import moment from "moment";
 
 
 interface EditParticipantsFormProps {
@@ -15,7 +16,7 @@ interface EditParticipantsFormProps {
 const EditParticipantsForm = (props: EditParticipantsFormProps) => {
     /* eslint-disable */
     const url = 'https://main.bridge.co.il/payments/competitions' + '/participants' || '';
-    const url2 = 'https://main.bridge.co.il/payments/payments_dev.php/competitions' + '/participants' || '';
+    const url2 = 'https://main.bridge.co.il/payments/competitions' + '/participants' || '';
     const {t, i18n} = useTranslation();
     const [players, setPlayers] = useState<IPlayerParticipation[]>([]);
     const [visible, setVisible] = useState<boolean[]>([]);
@@ -29,7 +30,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
     }, []);
 
     const refreshPlayers = () => {
-        Axios.get(`${url}?eventType=${props.event.event_type}&event=${props.event.id}`).then((res) => {
+        Axios.get(`${url2}?eventType=${props.event.event_type}&event=${props.event.id}`).then((res) => {
             if (res.data && res.data.length) {
                 debugger;
                 setPlayers(res.data);
@@ -61,8 +62,10 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                        onChange={e => updateFieldChanged(index, e)} value={playerForm[0].number}/>
             </td>
             <td><input type="text" name={'name'} required placeholder={'שם'}
-                       onChange={e => updateFieldChanged(index, e)} value={playerForm[0].name}/></td>
-            <td><input type="text" name={'bbo'} placeholder={'bbo'} onChange={e => updateFieldChanged(index, e)}
+                       onChange={e => updateFieldChanged(index, e)} value={playerForm[0].name}/>
+            </td>
+            <td><input type="text" name={'bbo'} placeholder={'bbo'}
+                       onChange={e => updateFieldChanged(index, e)}
                        value={playerForm[0].bbo}/></td>
             <td>
                 <button onClick={onSaveRecord}>{t('שמירה')}</button>
@@ -91,7 +94,6 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
     const onUpdateRecord = (id, e, state) => {
         e.preventDefault();
         Axios.delete(`${url2}?player_id=${id}&event_type=${props.event.event_type}&state=${state === '1' ? '0' : '1'}`).then((res) => {
-            alert('רישום עודכן');
             refreshPlayers();
         })
     }
@@ -102,15 +104,17 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
 
     const _handleFocusOut = (id, text) => {
         Axios.put(`${url2}?player_id=${id}`, {text}).then((res) => {
-            alert('   רשומה עודכנה');
         })
     }
 
     return (
         <>
-            <main>
-                <button
-                    onClick={() => setFormVisible(!formVisible)}>{t(!formVisible ? 'add_players_manual' : 'show_players_table')}</button>
+            <main className={'relative'}>
+                <div className={'btn-wrapper'}>
+                    <button
+                        className={'add-players-manual-btn button muted-button trb trb-secondary lt up'}
+                        onClick={() => setFormVisible(!formVisible)}>{t(!formVisible ? 'add_players_manual' : 'show_players_table')}</button>
+                </div>
                 <form>
                     <Table className={'edit-players'}>
                         {!formVisible && <thead>
@@ -132,12 +136,13 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                             console.log(p['player' + indexTemp + '_name']);
                             while (p['player' + indexTemp + '_name']) {
                                 if (p['player' + indexTemp + '_name']) {
-                                    return (<tr key={p.id} className={``}>
+                                    return (<tr key={p.id}
+                                                className={`${p.is_canceled === '1' ? 'cancelled-row' : ''}`}>
                                         <td>{p.id} </td>
-                                        <td>{p.registration_time}</td>
+                                        <td>{moment(p.registration_time).format('DD-MM-yyyy hh:mm').toString()}</td>
                                         <td>
 
-                                            <EditableLabel text={p.notes || ' none'}
+                                            <EditableLabel text={p.notes || t('non_notes')}
                                                            labelClassName='myLabelClass'
                                                            inputClassName='myInputClass'
                                                            inputWidth='200px'
@@ -169,7 +174,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                             }
                         })}
                         {players.length === 0 && <tr>
-                            <td>no players</td>
+                            <td>{t('no_players')}</td>
                         </tr>}
                         {formVisible && getPlayerForm()}
                         </tbody>

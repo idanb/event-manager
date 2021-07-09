@@ -5,7 +5,7 @@ import {Editor} from "react-draft-wysiwyg";
 import {EditorState, ContentState, convertFromHTML} from 'draft-js';
 import './eventForm.r.scss';
 import {IEvent} from "../interfaces/event";
-import {map} from 'lodash';
+import {map, isUndefined} from 'lodash';
 import axios from 'axios';
 import {convertToHTML} from 'draft-convert';
 
@@ -147,7 +147,7 @@ const EventForm = (props: EventFormProp) => {
                                 <label>
                                     {t('type')}
                                 </label>
-                                <select name="event_type" value={eventForm.event_type} onChange={handleInputChange}>
+                                <select name="event_type" value={eventForm.event_type} onChange={handleInputChange} disabled={!isUndefined(props.event?.id)}>
                                     <option value="1">{t('event_type_single')}</option>
                                     <option value="2">{t('event_type_couple')}</option>
                                     <option value="3">{t('event_type_group')}</option>
@@ -238,7 +238,8 @@ const EventForm = (props: EventFormProp) => {
 
                                 <label>  {t('guest_extra_price')}</label>
                                 <input type="number" name="guest_extra_price" value={eventForm.guest_extra_price}
-                                       className={'price-input'}
+                                       className={`price-input ${eventForm.only_members_limit ? 'disabled' : ''}`}
+                                       disabled={eventForm.only_members_limit}
                                        onChange={handleInputChange}/>
                                 ש״ח
                             </div>
@@ -254,7 +255,7 @@ const EventForm = (props: EventFormProp) => {
                                     <option value="0">{t('gender_limit_options.no_limited')}</option>
                                     <option value="1">{t('gender_limit_options.only_man')}</option>
                                     <option value="2">{t('gender_limit_options.only_women')}</option>
-                                    <option value="2">{t('gender_limit_options.only_couples')}</option>
+                                    <option value="3">{t('gender_limit_options.only_couples')}</option>
                                 </select>
                             </div>
 

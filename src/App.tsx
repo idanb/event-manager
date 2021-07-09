@@ -24,7 +24,7 @@ const App = () => {
     };
 
     const onSave = () => {
-        setShowForm(false);
+        // setShowForm(false);
         refreshEvents();
     };
 

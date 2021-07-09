@@ -76,6 +76,7 @@
     "participation_id":"  מזהה ",
     "receipt":"  מספר קבלה ",
     "notes":"   הערות ",
-    "add_players_manual":"   הוספת רשומה "
+    "add_players_manual":"   הוספת רשומה ",
+    "no_players":"    אין שחקנים רשומים "
   }
 }

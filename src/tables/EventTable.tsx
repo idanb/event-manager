@@ -97,9 +97,9 @@ const EventTable = (props: EventTableProp) => {
                             const isOverdue = new Date(event.date) < now;
 
                             return (<tr key={event.id} className={`${isOverdue ? 'red' : ''}`}>
-                                <td><a href={'' + process.env.REACT_APP_DOMAIN_DIRECT + '/events/' + event.id}
+                                <td><a href={'' + process.env.REACT_APP_DOMAIN_DIRECT + 'event/' + event.id}
                                        target={'_blank'}>{event.name}</a></td>
-                                <td>{moment(event.date).format('DD-MM-yyyy hh:mm').toString()} {event.date}</td>
+                                <td className={'white-space'}>{moment(event.date).format('DD-MM-yyyy hh:mm').toString()}</td>
                                 <td className={'white-space'}>{moment(event.registration_deadline).format('DD-MM-yyyy').toString()}</td>
                                 <td className={'text-center'}>{event.price}</td>
                                 <td className={'text-center'}>{event.guest_extra_price}</td>
@@ -119,12 +119,12 @@ const EventTable = (props: EventTableProp) => {
                                         {t('delete')}
                                     </button>
                                     {/*{event.has_registration_list}*/}
-                                    <button
+                                    {event.event_type === '1' || event.event_type === '4' && <button
                                         onClick={() => showEditParticipantsModalAction(event)}
                                         className="button muted-button">
                                         {t('edit_players')}
-                                    </button>
-                                    {event.has_registration_list === '1' && <button
+                                    </button>}
+                                    {event.event_type === '1' || event.event_type === '4' && event.has_registration_list === '1' && <button
                                         onClick={() => setShowUploadForm(true)}
                                         className="button muted-button">
                                         {t('add_players')}
