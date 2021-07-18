@@ -22,9 +22,15 @@ const EventTable = (props: EventTableProp) => {
     const [showUploadForm, setShowUploadForm] = useState<boolean>(false);
     const [showEditParticipants, setShowEditParticipants] = useState<boolean>(false);
 
-    const onSave = () => {
+    const onSave = (isNew?: boolean) => {
         props.onRefresh();
-        setShowEditForm(false);
+        if(isNew) {
+            setTimeout(()=>{
+                setShowEditForm(false);
+                setSelectedEvent(props.events[props.events.length - 1]);
+                setShowEditForm(true);
+            }, 1000)
+        }
     };
     const onCloseModal = () => {
         setShowEditForm(false);

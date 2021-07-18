@@ -8,9 +8,10 @@ import {IEvent} from "../interfaces/event";
 import {map, isUndefined} from 'lodash';
 import axios from 'axios';
 import {convertToHTML} from 'draft-convert';
+import { stateFromHTML } from 'draft-js-import-html';
 
 interface EventFormProp {
-    onSave: () => void;
+    onSave: (isNew?) => void;
     onCancel: () => void;
     event?: IEvent;
 }
@@ -52,12 +53,10 @@ const EventForm = (props: EventFormProp) => {
     };
     const [eventForm, setEventForm] = useState<any>(initialFormState);
     const [titles, setTitles] = useState<any>([]);
-    const [scheduleState, setScheduleState] = useState(EditorState.createWithContent(ContentState.createFromBlockArray(
-        convertFromHTML(props.event?.schedule || '')
-    )));
-    const [descriptionState, setDescriptionState] = useState(EditorState.createWithContent(ContentState.createFromBlockArray(
-        convertFromHTML(props.event?.description || '')
-    )));
+    let contentState1 = stateFromHTML(props.event?.schedule || '');
+    let contentState2 = stateFromHTML(props.event?.description || '');
+    const [scheduleState, setScheduleState] = useState(EditorState.createWithContent(contentState1));
+    const [descriptionState, setDescriptionState] = useState(EditorState.createWithContent(contentState2));
     const {t} = useTranslation();
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
@@ -121,14 +120,14 @@ const EventForm = (props: EventFormProp) => {
             axios
                 .put(url, eventFormTemp)
                 .then(res => {
-                    props.onSave();
+                    props.onSave(false);
                 })
                 .catch(err => alert('שמירה נכשלה'));
         } else {
             axios
                 .post(url, eventFormTemp)
                 .then(res => {
-                    props.onSave();
+                    props.onSave(true);
                 })
                 .catch(err => alert('שמירה נכשלה'));
         }
