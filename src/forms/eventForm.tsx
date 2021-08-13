@@ -11,13 +11,13 @@ import {convertToHTML} from 'draft-convert';
 import { stateFromHTML } from 'draft-js-import-html';
 
 interface EventFormProp {
-    onSave: (isNew?) => void;
+    onSave: () => void;
     onCancel: () => void;
     event?: IEvent;
 }
 
 const EventForm = (props: EventFormProp) => {
-    const url = process.env.REACT_APP_DOMAIN_DEV + '/events' || '';
+    const url = process.env.REACT_APP_DOMAIN + '/events' || '';
     const initialFormState = {
         name: props.event?.name || '',
         event_type: props.event?.event_type || '2',
@@ -70,7 +70,7 @@ const EventForm = (props: EventFormProp) => {
     }, []);
 
     const getTitles = () => {
-        axios.get('https://main.bridge.co.il/payments/competitions/titles').then((res) => {
+        axios.get(process.env.REACT_APP_DOMAIN + '/titles').then((res) => {
             setTitles(res.data);
         })
     }
@@ -120,14 +120,14 @@ const EventForm = (props: EventFormProp) => {
             axios
                 .put(url, eventFormTemp)
                 .then(res => {
-                    props.onSave(false);
+                    props.onSave();
                 })
                 .catch(err => alert('שמירה נכשלה'));
         } else {
             axios
                 .post(url, eventFormTemp)
                 .then(res => {
-                    props.onSave(true);
+                    props.onSave();
                 })
                 .catch(err => alert('שמירה נכשלה'));
         }
@@ -139,7 +139,13 @@ const EventForm = (props: EventFormProp) => {
             <header></header>
             <main>
                 <form onSubmit={handleSubmit}>
-                    <div className={'flex'}>
+                    <div className={'btn-wrapper'}>
+                        <button type="submit" className="button muted-button trb trb-secondary lt up"
+                        >{t('save')}</button>
+                        <button type="button" className="button muted-button trb trb-primary lt up"
+                                onClick={props.onCancel}>{t('cancel')}</button>
+                    </div>
+                    <div className={'flex overflow-y'}>
                         <div className={'column col-right'}>
 
                             <div className={'short-input'}>
@@ -335,12 +341,6 @@ const EventForm = (props: EventFormProp) => {
                                    onChange={handleInputChange}/>
 
                         </div>
-                    </div>
-                    <div className={'btn-wrapper'}>
-                        <button type="submit" className="button muted-button trb trb-secondary lt up"
-                        >{t('save')}</button>
-                        <button type="button" className="button muted-button trb trb-primary lt up"
-                                onClick={props.onCancel}>{t('cancel')}</button>
                     </div>
                 </form>
             </main>

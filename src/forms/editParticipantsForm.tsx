@@ -5,18 +5,19 @@ import {IPlayerParticipation} from "../interfaces/playerParticipation";
 import {Table} from "react-bootstrap";
 import EditableLabel from 'react-inline-editing';
 import moment from "moment";
+import {EventType, IEvent} from "../interfaces/event";
 
 
 interface EditParticipantsFormProps {
-    event: any;
+    event: IEvent;
     onSave: () => void;
     onCancel: () => void;
 }
 
 const EditParticipantsForm = (props: EditParticipantsFormProps) => {
     /* eslint-disable */
-    const url = 'https://main.bridge.co.il/payments/competitions' + '/participants' || '';
-    const url2 = 'https://main.bridge.co.il/payments/competitions' + '/participants' || '';
+    const url2 = process.env.REACT_APP_DOMAIN + '/participants';
+    const url1 = process.env.REACT_APP_DOMAIN_DEV + '/participantsExport';
     const {t, i18n} = useTranslation();
     const [players, setPlayers] = useState<IPlayerParticipation[]>([]);
     const [visible, setVisible] = useState<boolean[]>([]);
@@ -25,6 +26,11 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
 
 
     useEffect(() => {
+        if(props.event.event_type === EventType.SINGLES || props.event.event_type === EventType.EVENT){
+            setPlayerForm([{bbo: '', name: '', number: ''}]);
+        } else {
+            setPlayerForm([{bbo: '', name: '', number: ''}, {bbo: '', name: '', number: ''}]);
+        }
         refreshPlayers()
 
     }, []);
@@ -55,23 +61,23 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
 
 
     const getPlayerForm = () => {
-        // setPlayerForm([{bbo:'', name:'', number:''}]);
-        const index = 0;
-        return (<tr>
-            <td><input type="text" name={'number'} required placeholder={'מספר חבר'}
-                       onChange={e => updateFieldChanged(index, e)} value={playerForm[0].number}/>
-            </td>
-            <td><input type="text" name={'name'} required placeholder={'שם'}
-                       onChange={e => updateFieldChanged(index, e)} value={playerForm[0].name}/>
-            </td>
-            <td><input type="text" name={'bbo'} placeholder={'bbo'}
-                       onChange={e => updateFieldChanged(index, e)}
-                       value={playerForm[0].bbo}/></td>
-            <td>
-                <button onClick={onSaveRecord}>{t('שמירה')}</button>
-            </td>
 
-        </tr>);
+
+        return playerForm.map((value, index) => <div className={'player-row'} key={index}><tr>
+                <td><input type="text" name={'number'} required placeholder={'מספר חבר'}
+                           onChange={e => updateFieldChanged(index, e)} value={playerForm[index].number}/>
+                </td>
+                <td><input type="text" name={'name'} required placeholder={'שם'}
+                           onChange={e => updateFieldChanged(index, e)} value={playerForm[index].name}/>
+                </td>
+                <td><input type="text" name={'bbo'} placeholder={'bbo'}
+                           onChange={e => updateFieldChanged(index, e)}
+                           value={playerForm[index].bbo}/></td>
+
+
+            </tr>
+
+            </div>)
     }
 
     const onSaveRecord = (e) => {
@@ -79,7 +85,8 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
         console.log(playerForm);
         const req = {
             players: playerForm,
-            event_id: props.event.id
+            event_id: props.event.id,
+            event_type: props.event.event_type,
         }
         Axios
             .post(url2, req)
@@ -107,13 +114,37 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
         })
     }
 
+
+    const exportReport = () => {
+        Axios({
+            url: url1, //your url
+            method: 'GET',
+            responseType: 'blob', // important
+        }).then((response) => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'records.xlsx'); //or any other extension
+            document.body.appendChild(link);
+            link.click();
+        })
+    }
+
     return (
         <>
-            <main className={'relative'}>
+            <main>
                 <div className={'btn-wrapper'}>
                     <button
                         className={'add-players-manual-btn button muted-button trb trb-secondary lt up'}
                         onClick={() => setFormVisible(!formVisible)}>{t(!formVisible ? 'add_players_manual' : 'show_players_table')}</button>
+
+                    {!formVisible && <button
+                        className={'add-players-manual-btn button muted-button trb trb-secondary lt up'}
+                        onClick={() => exportReport()}>{t('export_players')}</button>}
+
+                    {!formVisible && props.event.has_registration_list && <button
+                        className={'add-players-manual-btn button muted-button trb trb-secondary lt up'}
+                        onClick={() => exportReport()}>{t('export_guests')}</button>}
                 </div>
                 <form>
                     <Table className={'edit-players'}>
@@ -121,7 +152,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                         <tr>
                             <th>{t('participation_id')}</th>
                             <th>{t('registration_time')}</th>
-                            <th>{t('notes')}</th>
+                            <th>{t('notes')}<i className="fa fa-pencil-square-o"></i></th>
                             <th>{t('number')}</th>
                             <th>{t('name')}</th>
                             <th>{t('bbo')}</th>
@@ -133,14 +164,18 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                         <tbody>
                         {!formVisible && players?.map((p, index) => {
                             let indexTemp = 1;
-                            console.log(p['player' + indexTemp + '_name']);
+                            const arr : JSX.Element[] = [];
                             while (p['player' + indexTemp + '_name']) {
+                                console.log(p);
+                                console.log('player' + indexTemp + '_name');
+                                console.log(p['player' + indexTemp + '_name']);
+
                                 if (p['player' + indexTemp + '_name']) {
-                                    return (<tr key={p.id}
+                                    arr.push(<tr key={p.id}
                                                 className={`${p.is_canceled === '1' ? 'cancelled-row' : ''}`}>
                                         <td>{p.id} </td>
                                         <td>{moment(p.registration_time).format('DD-MM-yyyy hh:mm').toString()}</td>
-                                        <td>
+                                        <td className={'hover-td'}>
 
                                             <EditableLabel text={p.notes || t('non_notes')}
                                                            labelClassName='myLabelClass'
@@ -148,7 +183,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                                                            inputWidth='200px'
                                                            inputHeight='25px'
                                                            labelPlaceHolder={t('non_notes')}
-                                                           inputMaxLength='50'
+                                                           inputMaxLength={50}
                                                            labelFontWeight='bold'
                                                            inputFontWeight='bold'
                                                            onFocus={(text) => _handleFocus(p.id, text)}
@@ -172,11 +207,15 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                                 }
                                 indexTemp++;
                             }
+                            return arr;
                         })}
-                        {players.length === 0 && <tr>
+                        {!formVisible && players?.length === 0 && <tr>
                             <td>{t('no_players')}</td>
                         </tr>}
                         {formVisible && getPlayerForm()}
+                        {formVisible && <td>
+                            <button onClick={onSaveRecord}>{t('שמירה')}</button>
+                        </td>}
                         </tbody>
                     </Table>
                 </form>

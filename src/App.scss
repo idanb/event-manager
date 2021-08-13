@@ -60,17 +60,12 @@
   position: relative;
 }
 
-.add-players-manual-btn {
-  top: 6px;
-  right: 54px;
-  width: 120px;
-}
-
 .btn-wrapper {
-  position: fixed;
-  top: 6%;
-  right: 344px;
   padding: 10px 20px;
+  button{
+    white-space: nowrap;
+  }
+
 }
 
 

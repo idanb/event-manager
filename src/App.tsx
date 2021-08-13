@@ -24,7 +24,7 @@ const App = () => {
     };
 
     const onSave = () => {
-        // setShowForm(false);
+        setShowForm(false);
         refreshEvents();
     };
 
@@ -94,6 +94,7 @@ const App = () => {
             >
                 {t('add')}
             </button>
+            <a href={'http://main.bridge.co.il/payments/payments_dev.php/competitions/list'} target="_blank">{t('show')}</a>
             <div className="flex-row">
                 <div className="flex-large">
                     <EventTable onRefresh={refreshEvents} events={events} editEvent={editEvent}

@@ -78,4 +78,16 @@ form {
   td label {
     margin: 0;
   }
+
+  .hover-td:hover{
+
+    cursor: pointer;
+    .myLabelClass{
+      cursor: pointer;
+    }
+  }
+
+  .player-row{
+    width: 100%;
+  }
 }

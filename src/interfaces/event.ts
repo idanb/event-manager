@@ -1,8 +1,15 @@
+export enum EventType {
+    SINGLES = '1',
+    COUPLES = '2',
+    GROUPS = '3',
+    EVENT = '4',
+}
+
 export interface IEvent {
     id: number | string;
     name: string;
     date: string;
-    event_type: string;
+    event_type: EventType;
     is_festival: boolean | string;
     only_members_limit: string;
     max_participates_limit: string;

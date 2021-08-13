@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {useTranslation} from "react-i18next";
-import {IEvent} from "../interfaces/event";
+import {EventType, IEvent} from "../interfaces/event";
 import {EventTypes} from "../constants/constants";
 import Modal from "../components/modal/modal";
 import EventForm from "../forms/eventForm";
@@ -22,15 +22,10 @@ const EventTable = (props: EventTableProp) => {
     const [showUploadForm, setShowUploadForm] = useState<boolean>(false);
     const [showEditParticipants, setShowEditParticipants] = useState<boolean>(false);
 
-    const onSave = (isNew?: boolean) => {
+    const onSave = () => {
         props.onRefresh();
-        if(isNew) {
-            setTimeout(()=>{
-                setShowEditForm(false);
-                setSelectedEvent(props.events[props.events.length - 1]);
-                setShowEditForm(true);
-            }, 1000)
-        }
+        setShowEditForm(false);
+
     };
     const onCloseModal = () => {
         setShowEditForm(false);
@@ -44,10 +39,11 @@ const EventTable = (props: EventTableProp) => {
     const showFormModal = () => showUploadForm ? <Modal
         className='ic-modal'
         width={"80%"}
-        title={t('edit_players_title')}
+        title={t('player_form_title')}
         modalClosed={() => setShowUploadForm(false)}
         visible={showUploadForm}>
-        <PlayerForm onSave={props.onRefresh} onCancel={onSave}/>
+        <PlayerForm onSave={() => setShowUploadForm(false)} onCancel={onSave}
+                    event={selectedEvent} />
     </Modal> : null;
 
     const showEditFormModal = () => showEditForm ? <Modal
@@ -70,7 +66,8 @@ const EventTable = (props: EventTableProp) => {
         title={t('edit_players_title')}
         modalClosed={() => setShowEditParticipants(false)}
         visible={showEditParticipants}>
-        <EditParticipantsForm event={selectedEvent} onSave={onSave} onCancel={onSave}/>
+        {selectedEvent &&
+        <EditParticipantsForm event={selectedEvent} onSave={onSave} onCancel={onSave} />}
     </Modal> : null;
 
 
@@ -97,14 +94,15 @@ const EventTable = (props: EventTableProp) => {
                 <tbody>
                 {props.events.length > 0 ? (
                     props.events.map(event => {
-                        var now = new Date();
-                        now.setHours(0,0,0,0);
+                            var now = new Date();
+                            now.setHours(0, 0, 0, 0);
 
                             const isOverdue = new Date(event.date) < now;
 
                             return (<tr key={event.id} className={`${isOverdue ? 'red' : ''}`}>
-                                <td><a href={'' + process.env.REACT_APP_DOMAIN_DIRECT + 'event/' + event.id}
-                                       target={'_blank'}>{event.name}</a></td>
+                                <td><a
+                                    href={'' + process.env.REACT_APP_DOMAIN_DIRECT + 'event/' + event.id}
+                                    target={'_blank'}>{event.name}</a></td>
                                 <td className={'white-space'}>{moment(event.date).format('DD-MM-yyyy hh:mm').toString()}</td>
                                 <td className={'white-space'}>{moment(event.registration_deadline).format('DD-MM-yyyy').toString()}</td>
                                 <td className={'text-center'}>{event.price}</td>
@@ -124,14 +122,19 @@ const EventTable = (props: EventTableProp) => {
                                         className="button muted-button">
                                         {t('delete')}
                                     </button>
-                                    {/*{event.has_registration_list}*/}
-                                    {event.event_type === '1' || event.event_type === '4' && <button
+
+                                    {(event.event_type === '1' || event.event_type === '2' || event.event_type === '4') &&
+                                    <button
                                         onClick={() => showEditParticipantsModalAction(event)}
                                         className="button muted-button">
                                         {t('edit_players')}
                                     </button>}
-                                    {event.event_type === '1' || event.event_type === '4' && event.has_registration_list === '1' && <button
-                                        onClick={() => setShowUploadForm(true)}
+                                    {[EventType.SINGLES, EventType.EVENT, EventType.COUPLES].includes(event.event_type) && event.has_registration_list === '1' &&
+                                    <button
+                                        onClick={() => {
+                                            setSelectedEvent(event);
+                                            setShowUploadForm(true)
+                                        }}
                                         className="button muted-button">
                                         {t('add_players')}
                                     </button>}
