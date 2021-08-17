@@ -1,14 +1,15 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useTranslation} from "react-i18next";
 import DatePicker from "react-datepicker";
 import {Editor} from "react-draft-wysiwyg";
-import {EditorState, ContentState, convertFromHTML} from 'draft-js';
+import {EditorState} from 'draft-js';
 import './eventForm.r.scss';
 import {IEvent} from "../interfaces/event";
 import {map, isUndefined} from 'lodash';
 import axios from 'axios';
 import {convertToHTML} from 'draft-convert';
-import { stateFromHTML } from 'draft-js-import-html';
+import {stateFromHTML} from 'draft-js-import-html';
+import isDev from "../helper";
 
 interface EventFormProp {
     onSave: () => void;
@@ -17,7 +18,7 @@ interface EventFormProp {
 }
 
 const EventForm = (props: EventFormProp) => {
-    const url = process.env.REACT_APP_DOMAIN + '/events' || '';
+    const url = (isDev() ? process.env.REACT_APP_DOMAIN_LOCAL : process.env.REACT_APP_DOMAIN) + '/events' || '';
     const initialFormState = {
         name: props.event?.name || '',
         event_type: props.event?.event_type || '2',
@@ -140,7 +141,8 @@ const EventForm = (props: EventFormProp) => {
             <main>
                 <form onSubmit={handleSubmit}>
                     <div className={'btn-wrapper'}>
-                        <button type="submit" className="button muted-button trb trb-secondary lt up"
+                        <button type="submit"
+                                className="button muted-button trb trb-secondary lt up"
                         >{t('save')}</button>
                         <button type="button" className="button muted-button trb trb-primary lt up"
                                 onClick={props.onCancel}>{t('cancel')}</button>
@@ -152,7 +154,9 @@ const EventForm = (props: EventFormProp) => {
                                 <label>
                                     {t('type')}
                                 </label>
-                                <select name="event_type" value={eventForm.event_type} onChange={handleInputChange} disabled={!isUndefined(props.event?.id)}>
+                                <select name="event_type" value={eventForm.event_type}
+                                        onChange={handleInputChange}
+                                        disabled={!isUndefined(props.event?.id)}>
                                     <option value="1">{t('event_type_single')}</option>
                                     <option value="2">{t('event_type_couple')}</option>
                                     <option value="3">{t('event_type_group')}</option>
@@ -163,12 +167,13 @@ const EventForm = (props: EventFormProp) => {
                             <div className={'short-input'}>
                                 <label>{t('location')} </label>
                                 <input type="text" name="location" value={eventForm.location}
-                                       onChange={handleInputChange}/>
+                                       onChange={handleInputChange} />
                             </div>
 
                             <label>  {t('name')}</label>
-                            <input className={'name-input'} type="text" name="name" value={eventForm.name || ''}
-                                   onChange={handleInputChange}/>
+                            <input className={'name-input'} type="text" name="name"
+                                   value={eventForm.name || ''}
+                                   onChange={handleInputChange} />
 
                             <div className={'short-input'}>
                                 <label>  {t('date')}</label>
@@ -182,7 +187,7 @@ const EventForm = (props: EventFormProp) => {
                                                     value: e
                                                 });
                                                 setStartDate(e);
-                                            }}/>
+                                            }} />
                             </div>
 
                             <div className={'short-input'}>
@@ -196,56 +201,62 @@ const EventForm = (props: EventFormProp) => {
                                                     value: e
                                                 });
                                                 setEndDate(e);
-                                            }}/>
+                                            }} />
                             </div>
 
 
                             <div className={'checkbox-wrapper'}>
-                                <input type="checkbox" name="is_festival" checked={eventForm.is_festival}
-                                       onChange={handleInputChange}/>
+                                <input type="checkbox" name="is_festival"
+                                       checked={eventForm.is_festival}
+                                       onChange={handleInputChange} />
                                 <label className={'checkbox'}>  {t('is_festival')}</label>
                             </div>
 
                             <div className={'checkbox-wrapper'}>
                                 <input type="checkbox" name="has_registration_list"
                                        checked={eventForm.has_registration_list}
-                                       onChange={handleInputChange}/>
-                                <label className={'checkbox'}>  {t('has_registration_list')}</label><br/>
+                                       onChange={handleInputChange} />
+                                <label className={'checkbox'}>  {t('has_registration_list')}</label><br />
                             </div>
 
                             <div className={'checkbox-wrapper'}>
-                                <input type="checkbox" name="only_members_limit" checked={eventForm.only_members_limit}
-                                       onChange={handleInputChange}/>
+                                <input type="checkbox" name="only_members_limit"
+                                       checked={eventForm.only_members_limit}
+                                       onChange={handleInputChange} />
                                 <label className={'checkbox'}>  {t('only_members_limit')}</label>
                             </div>
 
                             <div className={'checkbox-wrapper'}>
-                                <input type="checkbox" name="is_active" checked={eventForm.is_active}
-                                       onChange={handleInputChange}/>
+                                <input type="checkbox" name="is_active"
+                                       checked={eventForm.is_active}
+                                       onChange={handleInputChange} />
                                 <label className={'checkbox'}>  {t('is_active')}</label>
                             </div>
 
                             <div className={'checkbox-wrapper'}>
-                                <input type="checkbox" name="is_online" checked={eventForm.is_online}
-                                       onChange={handleInputChange}/>
+                                <input type="checkbox" name="is_online"
+                                       checked={eventForm.is_online}
+                                       onChange={handleInputChange} />
                                 <label className={'checkbox'}>  {t('is_online')}</label>
                             </div>
 
                             <div className={'short-input'}>
 
                                 <label>  {t('price')}</label>
-                                <input type="number" name="price" value={eventForm.price} className={'price-input'}
-                                       onChange={handleInputChange}/>
-                                       ש״ח
+                                <input type="number" name="price" value={eventForm.price}
+                                       className={'price-input'}
+                                       onChange={handleInputChange} />
+                                ש״ח
                             </div>
 
                             <div className={'short-input'}>
 
                                 <label>  {t('guest_extra_price')}</label>
-                                <input type="number" name="guest_extra_price" value={eventForm.guest_extra_price}
+                                <input type="number" name="guest_extra_price"
+                                       value={eventForm.guest_extra_price}
                                        className={`price-input ${eventForm.only_members_limit ? 'disabled' : ''}`}
                                        disabled={eventForm.only_members_limit}
-                                       onChange={handleInputChange}/>
+                                       onChange={handleInputChange} />
                                 ש״ח
                             </div>
 
@@ -257,10 +268,13 @@ const EventForm = (props: EventFormProp) => {
                                 </label>
                                 <select name="gender_limit" value={eventForm.gender_limit}
                                         onChange={handleInputChange}>
-                                    <option value="0">{t('gender_limit_options.no_limited')}</option>
+                                    <option
+                                        value="0">{t('gender_limit_options.no_limited')}</option>
                                     <option value="1">{t('gender_limit_options.only_man')}</option>
-                                    <option value="2">{t('gender_limit_options.only_women')}</option>
-                                    <option value="3">{t('gender_limit_options.only_couples')}</option>
+                                    <option
+                                        value="2">{t('gender_limit_options.only_women')}</option>
+                                    <option
+                                        value="3">{t('gender_limit_options.only_couples')}</option>
                                 </select>
                             </div>
 
@@ -268,33 +282,37 @@ const EventForm = (props: EventFormProp) => {
                                 <label>  {t('max_participates_limit')}</label>
                                 <input type="number" name="max_participates_limit"
                                        value={eventForm.max_participates_limit}
-                                       onChange={handleInputChange}/>
+                                       onChange={handleInputChange} />
                             </div>
 
 
                             <div className={'checkbox-wrapper'}>
-                                <input type="checkbox" name="has_age_limit" checked={eventForm.has_age_limit}
-                                       onChange={handleInputChange}/>
+                                <input type="checkbox" name="has_age_limit"
+                                       checked={eventForm.has_age_limit}
+                                       onChange={handleInputChange} />
                                 <label className={'checkbox'}>  {t('has_age_limit')}</label>
                             </div>
                             <div className={'short-input'}>
                                 <label>  {t('min_age_limit')}</label>
-                                <input type="number" name="min_age_limit" value={eventForm.min_age_limit}
+                                <input type="number" name="min_age_limit"
+                                       value={eventForm.min_age_limit}
                                        className={`${eventForm.has_age_limit ? '' : 'disabled'}`}
                                        disabled={!eventForm.has_age_limit}
-                                       onChange={handleInputChange}/>
+                                       onChange={handleInputChange} />
                             </div>
                             <div className={'short-input'}>
                                 <label>  {t('max_age_limit')}</label>
-                                <input type="number" name="max_age_limit" value={eventForm.max_age_limit}
+                                <input type="number" name="max_age_limit"
+                                       value={eventForm.max_age_limit}
                                        className={`${eventForm.has_age_limit ? '' : 'disabled'}`}
                                        disabled={!eventForm.has_age_limit}
-                                       onChange={handleInputChange}/>
+                                       onChange={handleInputChange} />
                             </div>
 
                             <div className={'checkbox-wrapper'}>
-                                <input type="checkbox" name="has_rank_limit" checked={eventForm.has_rank_limit}
-                                       onChange={handleInputChange}/>
+                                <input type="checkbox" name="has_rank_limit"
+                                       checked={eventForm.has_rank_limit}
+                                       onChange={handleInputChange} />
                                 <label className={'checkbox'}>  {t('has_rank_limit')}</label>
                             </div>
 
@@ -304,7 +322,8 @@ const EventForm = (props: EventFormProp) => {
                                         className={`${eventForm.has_rank_limit ? '' : 'disabled'}`}
                                         disabled={!eventForm.has_rank_limit}
                                         onChange={handleInputChange}>
-                                    {titles.map((t) => <option value={t.value}>{t.hebrew_name}</option>
+                                    {titles.map((t) => <option
+                                        value={t.value}>{t.hebrew_name}</option>
                                     )}
                                 </select>
                             </div>
@@ -315,7 +334,8 @@ const EventForm = (props: EventFormProp) => {
                                         className={`${eventForm.has_rank_limit ? '' : 'disabled'}`}
                                         disabled={!eventForm.has_rank_limit}
                                         onChange={handleInputChange}>
-                                    {titles.map((t) => <option value={t.value}>{t.hebrew_name}</option>
+                                    {titles.map((t) => <option
+                                        value={t.value}>{t.hebrew_name}</option>
                                     )}
                                 </select>
 
@@ -327,18 +347,19 @@ const EventForm = (props: EventFormProp) => {
                             <label>{t('description.title')} </label>
                             <Editor
                                 editorState={descriptionState}
-                                onEditorStateChange={onDescriptionStateChange}/>
+                                onEditorStateChange={onDescriptionStateChange} />
 
 
                             <label>{t('schedule')} </label>
                             <Editor
                                 editorState={scheduleState}
-                                onEditorStateChange={onScheduleStateChange}/>
+                                onEditorStateChange={onScheduleStateChange} />
 
 
                             <label>  {t('regulations_file_link')}</label>
-                            <input type="text" name="regulations_file_link" value={eventForm.regulations_file_link}
-                                   onChange={handleInputChange}/>
+                            <input type="text" name="regulations_file_link"
+                                   value={eventForm.regulations_file_link}
+                                   onChange={handleInputChange} />
 
                         </div>
                     </div>

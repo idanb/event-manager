@@ -10,7 +10,6 @@ import moment from "moment";
 
 interface EventTableProp {
     events: IEvent[];
-    editEvent: (arg0: IEvent) => any;
     deleteEvent: (arg0: any) => any;
     onRefresh: () => any;
 }

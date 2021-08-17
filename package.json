@@ -41,7 +41,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build -e .env.production",
+    "build": "react-scripts build -e .env.production && mv build/index.html build/eventsSuccess.php",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

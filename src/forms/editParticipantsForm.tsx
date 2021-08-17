@@ -6,6 +6,7 @@ import {Table} from "react-bootstrap";
 import EditableLabel from 'react-inline-editing';
 import moment from "moment";
 import {EventType, IEvent} from "../interfaces/event";
+import isDev from "../helper";
 
 
 interface EditParticipantsFormProps {
@@ -16,8 +17,8 @@ interface EditParticipantsFormProps {
 
 const EditParticipantsForm = (props: EditParticipantsFormProps) => {
     /* eslint-disable */
-    const url2 = process.env.REACT_APP_DOMAIN + '/participants';
-    const url1 = process.env.REACT_APP_DOMAIN_DEV + '/participantsExport';
+    const url2 = (isDev() ? process.env.REACT_APP_DOMAIN_LOCAL : process.env.REACT_APP_DOMAIN) + '/participants';
+    const url1 = (isDev() ? process.env.REACT_APP_DOMAIN_LOCAL : process.env.REACT_APP_DOMAIN) + '/participantsExport';
     const {t, i18n} = useTranslation();
     const [players, setPlayers] = useState<IPlayerParticipation[]>([]);
     const [visible, setVisible] = useState<boolean[]>([]);
@@ -26,7 +27,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
 
 
     useEffect(() => {
-        if(props.event.event_type === EventType.SINGLES || props.event.event_type === EventType.EVENT){
+        if (props.event.event_type === EventType.SINGLES || props.event.event_type === EventType.EVENT) {
             setPlayerForm([{bbo: '', name: '', number: ''}]);
         } else {
             setPlayerForm([{bbo: '', name: '', number: ''}, {bbo: '', name: '', number: ''}]);
@@ -63,21 +64,24 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
     const getPlayerForm = () => {
 
 
-        return playerForm.map((value, index) => <div className={'player-row'} key={index}><tr>
+        return playerForm.map((value, index) => <div className={'player-row'} key={index}>
+            <tr>
                 <td><input type="text" name={'number'} required placeholder={'מספר חבר'}
-                           onChange={e => updateFieldChanged(index, e)} value={playerForm[index].number}/>
+                           onChange={e => updateFieldChanged(index, e)}
+                           value={playerForm[index].number} />
                 </td>
                 <td><input type="text" name={'name'} required placeholder={'שם'}
-                           onChange={e => updateFieldChanged(index, e)} value={playerForm[index].name}/>
+                           onChange={e => updateFieldChanged(index, e)}
+                           value={playerForm[index].name} />
                 </td>
                 <td><input type="text" name={'bbo'} placeholder={'bbo'}
                            onChange={e => updateFieldChanged(index, e)}
-                           value={playerForm[index].bbo}/></td>
+                           value={playerForm[index].bbo} /></td>
 
 
             </tr>
 
-            </div>)
+        </div>)
     }
 
     const onSaveRecord = (e) => {
@@ -115,16 +119,23 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
     }
 
 
-    const exportReport = () => {
+    const exportReport = (registerReport?) => {
+        const isRegister = registerReport ? '&register_report=1' : '';
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        const yyyy = today.getFullYear();
+        const todayStr = '_' + mm  + dd  + yyyy;
+
         Axios({
-            url: url1, //your url
+            url: `${url1}?event_type=${props.event.event_type}&event_id=${props.event.id}${isRegister}`,
             method: 'GET',
             responseType: 'blob', // important
         }).then((response) => {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'records.xlsx'); //or any other extension
+            link.setAttribute('download', isRegister ? `זכאים${todayStr}.xlsx` : `רשומים${todayStr}.xlsx`);
             document.body.appendChild(link);
             link.click();
         })
@@ -164,15 +175,15 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                         <tbody>
                         {!formVisible && players?.map((p, index) => {
                             let indexTemp = 1;
-                            const arr : JSX.Element[] = [];
+                            const arr: JSX.Element[] = [];
                             while (p['player' + indexTemp + '_name']) {
                                 console.log(p);
                                 console.log('player' + indexTemp + '_name');
                                 console.log(p['player' + indexTemp + '_name']);
 
                                 if (p['player' + indexTemp + '_name']) {
-                                    arr.push(<tr key={p.id}
-                                                className={`${p.is_canceled === '1' ? 'cancelled-row' : ''}`}>
+                                    arr.push(<tr key={p.id + '' + indexTemp}
+                                                 className={`${p.is_canceled === '1' ? 'cancelled-row' : ''}`}>
                                         <td>{p.id} </td>
                                         <td>{moment(p.registration_time).format('DD-MM-yyyy hh:mm').toString()}</td>
                                         <td className={'hover-td'}>
@@ -197,11 +208,10 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                                         <td>{p.payment_amount}</td>
                                         <td>{p.is_canceled === '1' ? ' כן' : 'לא'}</td>
                                         <td>
-
-                                            {p.is_canceled === '0' && <button
-                                                onClick={(e) => onUpdateRecord(p.id, e, p.is_canceled)}>{t('cancel_registration')}</button>}
-                                            {p.is_canceled === '1' && <button
-                                                onClick={(e) => onUpdateRecord(p.id, e, p.is_canceled)}>{t('approve_registration')}</button>}
+                                            <button
+                                                onClick={(e) => onUpdateRecord(p.id, e, p.is_canceled)}>
+                                                {t(p.is_canceled === '0' ? 'cancel_registration' : 'approve_registration')}
+                                            </button>
                                         </td>
                                     </tr>);
                                 }

@@ -9,14 +9,12 @@ import Modal from "./components/modal/modal";
 import EventForm from "./forms/eventForm";
 import "react-datepicker/dist/react-datepicker.css";
 import "primeicons/primeicons.css"
+import isDev from "./helper";
 
 const App = () => {
     require('dotenv').config();
-    const url = process.env.REACT_APP_DOMAIN + '/events' || '';
-
-
-    const {t, i18n} = useTranslation();
-    const initialFormState = {id: '', name: '', description: ''};
+    const url = (isDev() ? process.env.REACT_APP_DOMAIN_LOCAL : process.env.REACT_APP_DOMAIN) + '/events' || '';
+    const {t} = useTranslation();
     const [showForm, setShowForm] = useState<boolean>(false);
 
     const onCloseModal = () => {
@@ -40,8 +38,6 @@ const App = () => {
 
     // Setting state
     const [events, setEvents] = useState<IEvent[]>([])
-    const [currentEvent, setCurrentEvent] = useState(initialFormState)
-    const [editing, setEditing] = useState(false);
 
     useEffect(() => {
         refreshEvents();
@@ -55,33 +51,14 @@ const App = () => {
             });
             setEvents(res.data);
         })
-    }
-
-
-    // CRUD operations
-    const addEvent = (event: IEvent) => {
-        event.id = events.length + 1;
-        setEvents([...events, event]);
-    }
+    };
 
     const deleteEvent = (id: number) => {
-        debugger;
         Axios.delete(url, {data: id}).then((res) => {
             console.log(res);
         });
-        setEditing(false);
         setEvents(events.filter(user => user.id !== id));
-    }
-
-    const updateEvent = (id: number, updatedEvent: IEvent) => {
-        setEditing(false);
-        setEvents(events.map(event => (event.id === id ? updatedEvent : event)));
-    }
-
-    const editEvent = (event: IEvent) => {
-        // setEditing(true);
-        // setCurrentEvent({ id: event.id, name: event.name, description: event.description });
-    }
+    };
 
     if (!events) return <span>loading...</span>;
     return (
@@ -94,10 +71,10 @@ const App = () => {
             >
                 {t('add')}
             </button>
-            <a href={'http://main.bridge.co.il/payments/payments_dev.php/competitions/list'} target="_blank">{t('show')}</a>
+            <a href={'http://main.bridge.co.il/payments/payments_dev.php/competitions/list'} rel="noreferrer" target="_blank">{t('show')}</a>
             <div className="flex-row">
                 <div className="flex-large">
-                    <EventTable onRefresh={refreshEvents} events={events} editEvent={editEvent}
+                    <EventTable onRefresh={refreshEvents} events={events}
                                 deleteEvent={deleteEvent}/>
                 </div>
             </div>

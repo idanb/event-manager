@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import axios from "axios";
 import {IEvent} from "../interfaces/event";
+import isDev from "../helper";
 
 interface PlayerFormProp {
     onSave: () => void;
@@ -9,7 +10,7 @@ interface PlayerFormProp {
 }
 
 const PlayerForm = (props: PlayerFormProp) => {
-    const url = process.env.REACT_APP_DOMAIN_DEV + '/participantsUpload' || '';
+    const url = (isDev() ? process.env.REACT_APP_DOMAIN_DEV_LOCAL : process.env.REACT_APP_DOMAIN) + '/participantsUpload' || '';
     const [selectedFile, setSelectedFile] = useState<any>(null);
 
     const onFileChange = event => {
