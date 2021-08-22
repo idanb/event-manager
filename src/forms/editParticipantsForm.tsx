@@ -103,6 +103,9 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
     }
 
     const onUpdateRecord = (id, e, state) => {
+        if (e.code === 'Enter') {
+            return;
+        }
         e.preventDefault();
         Axios.delete(`${url2}?player_id=${id}&event_type=${props.event.event_type}&state=${state === '1' ? '0' : '1'}`).then((res) => {
             refreshPlayers();
@@ -114,7 +117,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
     }
 
     const _handleFocusOut = (id, text) => {
-        Axios.put(`${url2}?player_id=${id}`, {text}).then((res) => {
+        Axios.put(`${url2}?player_id=${id}&event_type=${props.event.event_type}`, {text}).then((res) => {
         })
     }
 
@@ -125,7 +128,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
         const dd = String(today.getDate()).padStart(2, '0');
         const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
         const yyyy = today.getFullYear();
-        const todayStr = '_' + mm  + dd  + yyyy;
+        const todayStr = '_' + mm + dd + yyyy;
 
         Axios({
             url: `${url1}?event_type=${props.event.event_type}&event_id=${props.event.id}${isRegister}`,
@@ -157,7 +160,9 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                         className={'add-players-manual-btn button muted-button trb trb-secondary lt up'}
                         onClick={() => exportReport()}>{t('export_guests')}</button>}
                 </div>
-                <form>
+                <form onSubmit={e => {
+                    e.preventDefault();
+                }}>
                     <Table className={'edit-players'}>
                         {!formVisible && <thead>
                         <tr>

@@ -54,10 +54,15 @@ const App = () => {
     };
 
     const deleteEvent = (id: number) => {
-        Axios.delete(url, {data: id}).then((res) => {
-            console.log(res);
-        });
-        setEvents(events.filter(user => user.id !== id));
+        const approve = window.confirm("אתה עומד למחוק את התחרות " + id);
+        if (approve === true) {
+            Axios.delete(url, {data: id}).then((res) => {
+                console.log(res);
+            });
+            setEvents(events.filter(user => user.id !== id));
+        }
+
+
     };
 
     if (!events) return <span>loading...</span>;

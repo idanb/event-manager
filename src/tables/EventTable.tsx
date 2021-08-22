@@ -100,7 +100,7 @@ const EventTable = (props: EventTableProp) => {
 
                             return (<tr key={event.id} className={`${isOverdue ? 'red' : ''}`}>
                                 <td><a
-                                    href={'' + process.env.REACT_APP_DOMAIN_DIRECT + 'event/' + event.id}
+                                    href={'' + process.env.REACT_APP_DOMAIN + '/event/' + event.id}
                                     target={'_blank'}>{event.name}</a></td>
                                 <td className={'white-space'}>{moment(event.date).format('DD-MM-yyyy hh:mm').toString()}</td>
                                 <td className={'white-space'}>{moment(event.registration_deadline).format('DD-MM-yyyy').toString()}</td>
