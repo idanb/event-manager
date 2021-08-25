@@ -16,4 +16,5 @@ export interface IPlayerParticipation {
     notes: string;
     receipt: string;
     is_canceled: string;
+    is_paid: string;
 }

@@ -79,15 +79,26 @@ form {
     margin: 0;
   }
 
-  .hover-td:hover{
+  button:focus,
+  button:focus-visible {
+    outline: 0;
+    color: #4e4e4e;
+    border: 1px solid #818181;
+    background: transparent;
+  }
+
+  .hover-td:hover {
 
     cursor: pointer;
-    .myLabelClass{
+
+    .myLabelClass {
       cursor: pointer;
     }
   }
 
-  .player-row{
+  .player-row {
     width: 100%;
   }
+
+
 }

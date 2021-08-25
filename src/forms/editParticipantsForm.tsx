@@ -34,6 +34,15 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
         }
         refreshPlayers()
 
+        window.addEventListener('keydown', function (e) {
+            if (e.code == 'U+000A' || e.code == 'Enter' || e.keyCode == 13) {
+                e.preventDefault();
+                const test: HTMLElement | null = document.querySelector('#myButton');
+                test?.focus();
+                return false;
+            }
+        }, true);
+
     }, []);
 
     const refreshPlayers = () => {
@@ -118,6 +127,8 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
 
     const _handleFocusOut = (id, text) => {
         Axios.put(`${url2}?player_id=${id}&event_type=${props.event.event_type}`, {text}).then((res) => {
+            refreshPlayers();
+
         })
     }
 
@@ -149,6 +160,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
             <main>
                 <div className={'btn-wrapper'}>
                     <button
+                        id={'myButton'}
                         className={'add-players-manual-btn button muted-button trb trb-secondary lt up'}
                         onClick={() => setFormVisible(!formVisible)}>{t(!formVisible ? 'add_players_manual' : 'show_players_table')}</button>
 
@@ -182,17 +194,17 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                             let indexTemp = 1;
                             const arr: JSX.Element[] = [];
                             while (p['player' + indexTemp + '_name']) {
-                                console.log(p);
-                                console.log('player' + indexTemp + '_name');
-                                console.log(p['player' + indexTemp + '_name']);
-
                                 if (p['player' + indexTemp + '_name']) {
+                                    const isLast = p['player' + (indexTemp + 1) + '_name'] ? '' : 'last-row';
+                                    const isCancelled = p.is_canceled === '1' ? 'cancelled-row' : '';
+                                    const isPaid = p.notes.includes('ידנית') ? 'paid-row' : '';
                                     arr.push(<tr key={p.id + '' + indexTemp}
-                                                 className={`${p.is_canceled === '1' ? 'cancelled-row' : ''}`}>
+                                                 className={`${isLast} ${isCancelled} ${isPaid}`}>
                                         <td>{p.id} </td>
-                                        <td>{moment(p.registration_time).format('DD-MM-yyyy hh:mm').toString()}</td>
+                                        <td>{moment(p.registration_time).format('DD-MM-yyyy').toString()}</td>
                                         <td className={'hover-td'}>
 
+                                            {indexTemp === 1 &&
                                             <EditableLabel text={p.notes || t('non_notes')}
                                                            labelClassName='myLabelClass'
                                                            inputClassName='myInputClass'
@@ -204,7 +216,10 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                                                            inputFontWeight='bold'
                                                            onFocus={(text) => _handleFocus(p.id, text)}
                                                            onFocusOut={(text) => _handleFocusOut(p.id, text)}
-                                            />
+                                            />}
+                                            {
+                                                indexTemp !== 1 && <span>{p.notes}</span>
+                                            }
 
                                         </td>
                                         <td>{p['player' + indexTemp + '_num']}</td>
@@ -213,10 +228,10 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                                         <td>{p.payment_amount}</td>
                                         <td>{p.is_canceled === '1' ? ' כן' : 'לא'}</td>
                                         <td>
-                                            <button
+                                            {indexTemp === 1 && <button
                                                 onClick={(e) => onUpdateRecord(p.id, e, p.is_canceled)}>
                                                 {t(p.is_canceled === '0' ? 'cancel_registration' : 'approve_registration')}
-                                            </button>
+                                            </button>}
                                         </td>
                                     </tr>);
                                 }
