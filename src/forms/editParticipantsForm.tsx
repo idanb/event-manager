@@ -170,7 +170,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
 
                     {!formVisible && props.event.has_registration_list && <button
                         className={'add-players-manual-btn button muted-button trb trb-secondary lt up'}
-                        onClick={() => exportReport()}>{t('export_guests')}</button>}
+                        onClick={() => exportReport(1)}>{t('export_guests')}</button>}
                 </div>
                 <form onSubmit={e => {
                     e.preventDefault();
@@ -186,6 +186,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                             <th>{t('bbo')}</th>
                             <th>{t('payment_amount')}</th>
                             <th>{t('canceled')}</th>
+                            <th>{t('is_paid')}</th>
                             <th>{t('actions')}</th>
                         </tr>
                         </thead>}
@@ -227,6 +228,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                                         <td>{p['player' + indexTemp + '_bbo']}</td>
                                         <td>{p.payment_amount}</td>
                                         <td>{p.is_canceled === '1' ? ' כן' : 'לא'}</td>
+                                        <td>{p.is_paid === '1' ? ' כן' : 'לא'}</td>
                                         <td>
                                             {indexTemp === 1 && <button
                                                 onClick={(e) => onUpdateRecord(p.id, e, p.is_canceled)}>

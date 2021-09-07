@@ -62,7 +62,7 @@ const EventTable = (props: EventTableProp) => {
     const showEditParticipantsModal = () => showEditParticipants ? <Modal
         className='ic-modal'
         width={"80%"}
-        title={t('edit_players_title')}
+        title={t('edit_players_title') + ' - ' + selectedEvent?.name}
         modalClosed={() => setShowEditParticipants(false)}
         visible={showEditParticipants}>
         {selectedEvent &&
