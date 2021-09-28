@@ -198,7 +198,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                                 if (p['player' + indexTemp + '_name']) {
                                     const isLast = p['player' + (indexTemp + 1) + '_name'] ? '' : 'last-row';
                                     const isCancelled = p.is_canceled === '1' ? 'cancelled-row' : '';
-                                    const isPaid = p.notes.includes('ידנית') ? 'paid-row' : '';
+                                    const isPaid = p.is_paid === '1' ? 'paid-row' : '';
                                     arr.push(<tr key={p.id + '' + indexTemp}
                                                  className={`${isLast} ${isCancelled} ${isPaid}`}>
                                         <td>{p.id} </td>
@@ -226,7 +226,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                                         <td>{p['player' + indexTemp + '_num']}</td>
                                         <td>{p['player' + indexTemp + '_name']}</td>
                                         <td>{p['player' + indexTemp + '_bbo']}</td>
-                                        <td>{p.payment_amount}</td>
+                                        <td>{indexTemp === 1 && p.payment_amount}</td>
                                         <td>{p.is_canceled === '1' ? ' כן' : 'לא'}</td>
                                         <td>{p.is_paid === '1' ? ' כן' : 'לא'}</td>
                                         <td>
