@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import './App.scss';
 import EventTable from './tables/EventTable'
-import Axios from "axios";
+import Axios, {AxiosResponse} from "axios";
 import {useTranslation} from "react-i18next";
 import {IEvent} from "./interfaces/event";
 import Modal from "./components/modal/modal";
@@ -13,7 +13,7 @@ import isDev from "./helper";
 
 const App = () => {
     require('dotenv').config();
-    const url = (isDev() ? process.env.REACT_APP_DOMAIN_LOCAL : process.env.REACT_APP_DOMAIN) + '/events' || '';
+    const url = (isDev() ? process.env.REACT_APP_DOMAIN : process.env.REACT_APP_DOMAIN) + '/events' || '';
     const {t} = useTranslation();
     const [showForm, setShowForm] = useState<boolean>(false);
 
@@ -45,7 +45,7 @@ const App = () => {
 
 
     const refreshEvents = () => {
-        Axios.get(url).then((res) => {
+        Axios.get(url).then((res: AxiosResponse<any>) => {
             res.data.sort(function (a, b) {
                 return new Date(a.date).getTime() - new Date(b.date).getTime();
             });

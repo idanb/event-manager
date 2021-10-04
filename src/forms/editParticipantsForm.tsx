@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {useTranslation} from "react-i18next";
-import Axios from "axios";
+import Axios, {AxiosResponse} from "axios";
 import {IPlayerParticipation} from "../interfaces/playerParticipation";
 import {Table} from "react-bootstrap";
 import EditableLabel from 'react-inline-editing';
@@ -17,8 +17,8 @@ interface EditParticipantsFormProps {
 
 const EditParticipantsForm = (props: EditParticipantsFormProps) => {
     /* eslint-disable */
-    const url2 = (isDev() ? process.env.REACT_APP_DOMAIN_LOCAL : process.env.REACT_APP_DOMAIN) + '/participants';
-    const url1 = (isDev() ? process.env.REACT_APP_DOMAIN_LOCAL : process.env.REACT_APP_DOMAIN) + '/participantsExport';
+    const url2 = (isDev() ? process.env.REACT_APP_DOMAIN : process.env.REACT_APP_DOMAIN) + '/participants';
+    const url1 = (isDev() ? process.env.REACT_APP_DOMAIN : process.env.REACT_APP_DOMAIN) + '/participantsExport';
     const {t, i18n} = useTranslation();
     const [players, setPlayers] = useState<IPlayerParticipation[]>([]);
     const [visible, setVisible] = useState<boolean[]>([]);
@@ -46,7 +46,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
     }, []);
 
     const refreshPlayers = () => {
-        Axios.get(`${url2}?eventType=${props.event.event_type}&event=${props.event.id}`).then((res) => {
+        Axios.get(`${url2}?eventType=${props.event.event_type}&event=${props.event.id}`).then((res: AxiosResponse<any>) => {
             if (res.data && res.data.length) {
                 debugger;
                 setPlayers(res.data);
@@ -198,7 +198,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                                 if (p['player' + indexTemp + '_name']) {
                                     const isLast = p['player' + (indexTemp + 1) + '_name'] ? '' : 'last-row';
                                     const isCancelled = p.is_canceled === '1' ? 'cancelled-row' : '';
-                                    const isPaid = p.is_paid === '1' ? 'paid-row' : '';
+                                    const isPaid = p.is_paid === '1' && p.is_canceled === '0' ? 'paid-row' : '';
                                     arr.push(<tr key={p.id + '' + indexTemp}
                                                  className={`${isLast} ${isCancelled} ${isPaid}`}>
                                         <td>{p.id} </td>
