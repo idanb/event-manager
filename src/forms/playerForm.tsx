@@ -10,7 +10,7 @@ interface PlayerFormProp {
 }
 
 const PlayerForm = (props: PlayerFormProp) => {
-    const url = (isDev() ? process.env.REACT_APP_DOMAIN_DEV_LOCAL : process.env.REACT_APP_DOMAIN) + '/participantsUpload' || '';
+    const url = (isDev() ? process.env.REACT_APP_DOMAIN_DEV : process.env.REACT_APP_DOMAIN_DEV) + '/participantsUpload' || '';
     const [selectedFile, setSelectedFile] = useState<any>(null);
 
     const onFileChange = event => {

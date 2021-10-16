@@ -122,13 +122,13 @@ const EventTable = (props: EventTableProp) => {
                                         {t('delete')}
                                     </button>
 
-                                    {(event.event_type === '1' || event.event_type === '2' || event.event_type === '4') &&
+                                    {[EventType.SINGLES, EventType.EVENT, EventType.COUPLES, EventType.GROUPS].includes(event.event_type) &&
                                     <button
                                         onClick={() => showEditParticipantsModalAction(event)}
                                         className="button muted-button">
                                         {t('edit_players')}
                                     </button>}
-                                    {[EventType.SINGLES, EventType.EVENT, EventType.COUPLES].includes(event.event_type) && event.has_registration_list === '1' &&
+                                    {[EventType.SINGLES, EventType.EVENT, EventType.COUPLES, EventType.GROUPS].includes(event.event_type) && event.has_registration_list === '1' &&
                                     <button
                                         onClick={() => {
                                             setSelectedEvent(event);

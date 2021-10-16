@@ -15,22 +15,33 @@ interface EditParticipantsFormProps {
     onCancel: () => void;
 }
 
-const EditParticipantsForm = (props: EditParticipantsFormProps) => {
+const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormProps) => {
     /* eslint-disable */
     const url2 = (isDev() ? process.env.REACT_APP_DOMAIN : process.env.REACT_APP_DOMAIN) + '/participants';
+    const url3 = (isDev() ? process.env.REACT_APP_DOMAIN_DEV : process.env.REACT_APP_DOMAIN_DEV) + '/participants';
     const url1 = (isDev() ? process.env.REACT_APP_DOMAIN : process.env.REACT_APP_DOMAIN) + '/participantsExport';
     const {t, i18n} = useTranslation();
     const [players, setPlayers] = useState<IPlayerParticipation[]>([]);
     const [visible, setVisible] = useState<boolean[]>([]);
     const [formVisible, setFormVisible] = useState<boolean>(false);
     const [playerForm, setPlayerForm] = useState<any>([{bbo: '', name: '', number: ''}]);
+    const [teamForm, setTeamForm] = useState<any>({name: '', number: ''});
 
 
     useEffect(() => {
-        if (props.event.event_type === EventType.SINGLES || props.event.event_type === EventType.EVENT) {
+        if (event.event_type === EventType.SINGLES || event.event_type === EventType.EVENT) {
             setPlayerForm([{bbo: '', name: '', number: ''}]);
-        } else {
+        } else if (event.event_type === EventType.COUPLES) {
             setPlayerForm([{bbo: '', name: '', number: ''}, {bbo: '', name: '', number: ''}]);
+        } else {
+            setPlayerForm([
+                {bbo: '', name: '', number: ''},
+                {bbo: '', name: '', number: ''},
+                {bbo: '', name: '', number: ''},
+                {bbo: '', name: '', number: ''},
+                {bbo: '', name: '', number: ''},
+                {bbo: '', name: '', number: ''}]);
+
         }
         refreshPlayers()
 
@@ -46,7 +57,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
     }, []);
 
     const refreshPlayers = () => {
-        Axios.get(`${url2}?eventType=${props.event.event_type}&event=${props.event.id}`).then((res: AxiosResponse<any>) => {
+        Axios.get(`${url2}?eventType=${event.event_type}&event=${event.id}`).then((res: AxiosResponse<any>) => {
             if (res.data && res.data.length) {
                 debugger;
                 setPlayers(res.data);
@@ -70,6 +81,23 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
     }
 
 
+    const getGroupForm = () => {
+        return <tr>
+            <td><input type="text" name={'team_name'} required placeholder={'שם קבוצה'}
+                       onChange={e => setTeamForm({name: e.target.value, number: teamForm.number})}
+                       value={teamForm.name} />
+
+            </td>
+            <td>
+                <input type="text" name={'team_number'} placeholder={'מספר קבוצה'}
+                       onChange={e => setTeamForm({number: e.target.value, name: teamForm.name})}
+                       value={teamForm.number} />
+            </td>
+
+
+
+        </tr>
+    }
     const getPlayerForm = () => {
 
 
@@ -95,16 +123,16 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
 
     const onSaveRecord = (e) => {
         e.preventDefault();
-        console.log(playerForm);
         const req = {
             players: playerForm,
-            event_id: props.event.id,
-            event_type: props.event.event_type,
+            team: teamForm,
+            event_id: event.id,
+            event_type: event.event_type,
         }
         Axios
-            .post(url2, req)
+            .post(url3, req)
             .then(res => {
-                props.onSave();
+                onSave();
                 setFormVisible(false);
                 refreshPlayers();
             })
@@ -116,7 +144,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
             return;
         }
         e.preventDefault();
-        Axios.delete(`${url2}?player_id=${id}&event_type=${props.event.event_type}&state=${state === '1' ? '0' : '1'}`).then((res) => {
+        Axios.delete(`${url2}?player_id=${id}&event_type=${event.event_type}&state=${state === '1' ? '0' : '1'}`).then((res) => {
             refreshPlayers();
         })
     }
@@ -126,7 +154,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
     }
 
     const _handleFocusOut = (id, text) => {
-        Axios.put(`${url2}?player_id=${id}&event_type=${props.event.event_type}`, {text}).then((res) => {
+        Axios.put(`${url2}?player_id=${id}&event_type=${event.event_type}`, {text}).then((res) => {
             refreshPlayers();
 
         })
@@ -142,7 +170,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
         const todayStr = '_' + mm + dd + yyyy;
 
         Axios({
-            url: `${url1}?event_type=${props.event.event_type}&event_id=${props.event.id}${isRegister}`,
+            url: `${url1}?event_type=${event.event_type}&event_id=${event.id}${isRegister}`,
             method: 'GET',
             responseType: 'blob', // important
         }).then((response) => {
@@ -168,14 +196,14 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                         className={'add-players-manual-btn button muted-button trb trb-secondary lt up'}
                         onClick={() => exportReport()}>{t('export_players')}</button>}
 
-                    {!formVisible && props.event.has_registration_list && <button
+                    {!formVisible && event.has_registration_list && <button
                         className={'add-players-manual-btn button muted-button trb trb-secondary lt up'}
                         onClick={() => exportReport(1)}>{t('export_guests')}</button>}
                 </div>
                 <form onSubmit={e => {
                     e.preventDefault();
                 }}>
-                    <Table className={'edit-players'}>
+                    <Table className={`edit-players ${formVisible ? 'add-players-form' : ''}`}>
                         {!formVisible && <thead>
                         <tr>
                             <th>{t('participation_id')}</th>
@@ -197,10 +225,11 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                             while (p['player' + indexTemp + '_name']) {
                                 if (p['player' + indexTemp + '_name']) {
                                     const isLast = p['player' + (indexTemp + 1) + '_name'] ? '' : 'last-row';
-                                    const isCancelled = p.is_canceled === '1' ? 'cancelled-row' : '';
+                                    const isCancelled = p.is_paid === '0' && p.is_canceled === '1' ? 'cancelled-row' : '';
                                     const isPaid = p.is_paid === '1' && p.is_canceled === '0' ? 'paid-row' : '';
+                                    const isRetaired = p.is_paid === '1' && p.is_canceled === '1' ? 'retiared-row' : '';
                                     arr.push(<tr key={p.id + '' + indexTemp}
-                                                 className={`${isLast} ${isCancelled} ${isPaid}`}>
+                                                 className={`${isLast} ${isCancelled} ${isPaid} ${isRetaired}`}>
                                         <td>{p.id} </td>
                                         <td>{moment(p.registration_time).format('DD-MM-yyyy').toString()}</td>
                                         <td className={'hover-td'}>
@@ -244,6 +273,7 @@ const EditParticipantsForm = (props: EditParticipantsFormProps) => {
                         {!formVisible && players?.length === 0 && <tr>
                             <td>{t('no_players')}</td>
                         </tr>}
+                        {formVisible && event.event_type === EventType.GROUPS && getGroupForm()}
                         {formVisible && getPlayerForm()}
                         {formVisible && <td>
                             <button onClick={onSaveRecord}>{t('שמירה')}</button>
