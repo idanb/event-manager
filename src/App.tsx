@@ -9,7 +9,6 @@ import Modal from "./components/modal/modal";
 import EventForm from "./forms/eventForm";
 import "react-datepicker/dist/react-datepicker.css";
 import "primeicons/primeicons.css"
-import isDev from "./helper";
 
 const App = () => {
     require('dotenv').config();
@@ -40,7 +39,9 @@ const App = () => {
     const [events, setEvents] = useState<IEvent[]>([])
 
     useEffect(() => {
-        refreshEvents();
+        if(refreshEvents) {
+            refreshEvents();
+        }
     }, []);
 
 

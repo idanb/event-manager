@@ -1,14 +1,16 @@
 import React, {useState, useEffect} from 'react';
 import {useTranslation} from "react-i18next";
 import DatePicker from "react-datepicker";
+import {EditorState, convertToRaw, ContentState} from 'draft-js';
 import {Editor} from "react-draft-wysiwyg";
-import {EditorState} from 'draft-js';
 import './eventForm.r.scss';
 import {IEvent} from "../interfaces/event";
 import {map, isUndefined} from 'lodash';
 import axios from 'axios';
-import {convertToHTML} from 'draft-convert';
 import {stateFromHTML} from 'draft-js-import-html';
+import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
+
 
 interface EventFormProp {
     onSave: () => void;
@@ -53,10 +55,16 @@ const EventForm = (props: EventFormProp) => {
     };
     const [eventForm, setEventForm] = useState<any>(initialFormState);
     const [titles, setTitles] = useState<any>([]);
+
+    const { contentBlocks, entityMap } = htmlToDraft(props.event?.description);
+    const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+    const editorState = EditorState.createWithContent(contentState);
+    const [descriptionState, setDescriptionState] = useState(editorState);
+
     let contentState1 = stateFromHTML(props.event?.schedule || '');
-    let contentState2 = stateFromHTML(props.event?.description || '');
     const [scheduleState, setScheduleState] = useState(EditorState.createWithContent(contentState1));
-    const [descriptionState, setDescriptionState] = useState(EditorState.createWithContent(contentState2));
+
+
     const {t} = useTranslation();
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
@@ -105,8 +113,8 @@ const EventForm = (props: EventFormProp) => {
         });
         values['date'] = new Date(startDate.getTime() - (startDate.getTimezoneOffset() * 60000)).toISOString().slice(0, 19).replace('T', ' ');
         values['registration_deadline'] = endDate.toISOString().slice(0, 19).replace('T', ' ');
-        values['description'] = convertToHTML(descriptionState.getCurrentContent());
-        values['schedule'] = convertToHTML(scheduleState.getCurrentContent());
+        values['description'] = draftToHtml(convertToRaw(descriptionState.getCurrentContent()));
+        values['schedule'] = draftToHtml(convertToRaw(scheduleState.getCurrentContent()));
         console.log(values);
         return values;
     }
