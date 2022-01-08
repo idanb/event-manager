@@ -10,8 +10,12 @@ interface PlayerFormProp {
 }
 
 const PlayerForm = (props: PlayerFormProp) => {
-    const url = (isDev() ? process.env.REACT_APP_DOMAIN_DEV : process.env.REACT_APP_DOMAIN_DEV) + '/participantsUpload' || '';
+    const url = process.env.REACT_APP_DOMAIN + '/participantsUpload' || '';
+    const url2 = process.env.REACT_APP_DOMAIN_DEV  + '/participantsUpload';
+
     const [selectedFile, setSelectedFile] = useState<any>(null);
+    const [isDev, setIsDev] = useState<boolean>(false);
+
 
     const onFileChange = event => {
         setSelectedFile(event.target.files[0]);
@@ -24,7 +28,7 @@ const PlayerForm = (props: PlayerFormProp) => {
         formData.append('avatar', selectedFile);
 
         axios
-            .post(url + '/' + props.event?.id + '/' + props.event?.event_type, formData, {
+            .post((isDev ? url2 : url) + '/' + props.event?.id + '/' + props.event?.event_type, formData, {
                 headers: {
                     'content-type': 'multipart/form-data'
                 }
@@ -39,7 +43,7 @@ const PlayerForm = (props: PlayerFormProp) => {
         if (selectedFile) {
             return (
                 <div>
-                    <h2>פרטי קובץ :</h2>
+                    <h2 onDoubleClick={() => setIsDev(true)}>פרטי קובץ :</h2>
                     <p> שם קובץ: {selectedFile.name}</p>
                     <p> סוג הקובץ: {selectedFile.type}</p>
                     <p>

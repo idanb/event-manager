@@ -13,7 +13,7 @@ import isDev from "./helper";
 
 const App = () => {
     require('dotenv').config();
-    const url = (isDev() ? process.env.REACT_APP_DOMAIN : process.env.REACT_APP_DOMAIN) + '/events' || '';
+    const url = process.env.REACT_APP_DOMAIN + '/events';
     const {t} = useTranslation();
     const [showForm, setShowForm] = useState<boolean>(false);
 

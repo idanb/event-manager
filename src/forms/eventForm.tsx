@@ -9,7 +9,6 @@ import {map, isUndefined} from 'lodash';
 import axios from 'axios';
 import {convertToHTML} from 'draft-convert';
 import {stateFromHTML} from 'draft-js-import-html';
-import isDev from "../helper";
 
 interface EventFormProp {
     onSave: () => void;
@@ -18,7 +17,7 @@ interface EventFormProp {
 }
 
 const EventForm = (props: EventFormProp) => {
-    const url = (isDev() ? process.env.REACT_APP_DOMAIN_LOCAL : process.env.REACT_APP_DOMAIN) + '/events' || '';
+    const url = process.env.REACT_APP_DOMAIN + '/events';
     const initialFormState = {
         name: props.event?.name || '',
         event_type: props.event?.event_type || '2',
@@ -207,7 +206,8 @@ const EventForm = (props: EventFormProp) => {
 
                             <div className={'checkbox-wrapper'}>
                                 <input type="checkbox" name="is_festival"
-                                       checked={eventForm.is_festival}
+                                       disabled={eventForm.event_type === '4'}
+                                       checked={eventForm.is_festival && eventForm.event_type !== "4"}
                                        onChange={handleInputChange} />
                                 <label className={'checkbox'}>  {t('is_festival')}</label>
                             </div>

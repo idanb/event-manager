@@ -6,7 +6,6 @@ import {Table} from "react-bootstrap";
 import EditableLabel from 'react-inline-editing';
 import moment from "moment";
 import {EventType, IEvent} from "../interfaces/event";
-import isDev from "../helper";
 
 
 interface EditParticipantsFormProps {
@@ -17,12 +16,15 @@ interface EditParticipantsFormProps {
 
 const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormProps) => {
     /* eslint-disable */
-    const url2 = (isDev() ? process.env.REACT_APP_DOMAIN : process.env.REACT_APP_DOMAIN) + '/participants';
-    const url3 = (isDev() ? process.env.REACT_APP_DOMAIN_DEV : process.env.REACT_APP_DOMAIN_DEV) + '/participants';
-    const url1 = (isDev() ? process.env.REACT_APP_DOMAIN : process.env.REACT_APP_DOMAIN) + '/participantsExport';
+    const url2 = process.env.REACT_APP_DOMAIN  + '/participants';
+    const url3 = process.env.REACT_APP_DOMAIN_DEV  + '/participants';
+    const url1 = process.env.REACT_APP_DOMAIN + '/participantsExport';
+    const url4 = process.env.REACT_APP_DOMAIN + '/participantsUpload' || '';
+
     const {t, i18n} = useTranslation();
     const [players, setPlayers] = useState<IPlayerParticipation[]>([]);
     const [visible, setVisible] = useState<boolean[]>([]);
+    const [isDev, setIsDev] = useState<boolean>(false);
     const [formVisible, setFormVisible] = useState<boolean>(false);
     const [playerForm, setPlayerForm] = useState<any>([{bbo: '', name: '', number: ''}]);
     const [teamForm, setTeamForm] = useState<any>({name: '', number: ''});
@@ -76,8 +78,15 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
 
         let newArr = [...playerForm]; // copying the old datas array
         newArr[index][e.target.name] = e.target.value; // replace e.target.value with whatever you want to change it to
+        setPlayerForm(newArr);
+    }
 
-        setPlayerForm(newArr); // ??
+
+    const removeAll = (e) => {
+        Axios.delete(url4 + '/' + event?.id + '/' + event?.event_type)            .then(res => {
+            alert('כלל המשתתפים נמחקו');
+        })
+            .catch(err => alert('שמירה נכשלה'));
     }
 
 
@@ -199,6 +208,8 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
                     {!formVisible && event.has_registration_list && <button
                         className={'add-players-manual-btn button muted-button trb trb-secondary lt up'}
                         onClick={() => exportReport(1)}>{t('export_guests')}</button>}
+
+                    <div onDoubleClick={removeAll}> לצורכי בדיקה - מחיקת כלל המשתתפים לחץ פעמיים</div>
                 </div>
                 <form onSubmit={e => {
                     e.preventDefault();
