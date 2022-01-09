@@ -56,7 +56,7 @@ const EventForm = (props: EventFormProp) => {
     const [eventForm, setEventForm] = useState<any>(initialFormState);
     const [titles, setTitles] = useState<any>([]);
 
-    const { contentBlocks, entityMap } = htmlToDraft(props.event?.description);
+    const { contentBlocks, entityMap } = htmlToDraft(props.event?.description || '');
     const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
     const editorState = EditorState.createWithContent(contentState);
     const [descriptionState, setDescriptionState] = useState(editorState);
