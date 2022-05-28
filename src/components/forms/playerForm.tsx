@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import axios from "axios";
-import {IEvent} from "../interfaces/event";
+import {IEvent} from "../../interfaces/event";
 
 interface PlayerFormProp {
     onSave: () => void;

@@ -2,10 +2,10 @@ import React, {useState} from 'react'
 import {useTranslation} from "react-i18next";
 import {EventType, IEvent} from "../interfaces/event";
 import {EventTypes} from "../constants/constants";
-import Modal from "../components/modal/modal";
-import EventForm from "../forms/eventForm";
-import PlayerForm from "../forms/playerForm";
-import EditParticipantsForm from "../forms/editParticipantsForm";
+import Modal from "./modal/modal";
+import EventForm from "./forms/eventForm";
+import PlayerForm from "./forms/playerForm";
+import EditParticipantsForm from "./forms/editParticipantsForm";
 import moment from "moment";
 
 interface EventTableProp {
@@ -17,6 +17,7 @@ interface EventTableProp {
 const EventTable = (props: EventTableProp) => {
     const {t} = useTranslation();
     const [selectedEvent, setSelectedEvent] = useState<IEvent>();
+    const [formMode, setFormMode] = useState<string>();
     const [showEditForm, setShowEditForm] = useState<boolean>(false);
     const [showUploadForm, setShowUploadForm] = useState<boolean>(false);
     const [showEditParticipants, setShowEditParticipants] = useState<boolean>(false);
@@ -33,6 +34,13 @@ const EventTable = (props: EventTableProp) => {
     const editEvent = (event: IEvent) => {
         setSelectedEvent(event);
         setShowEditForm(true);
+        setFormMode('EDIT');
+    };
+
+    const duplicate = (event: IEvent) => {
+        setSelectedEvent(event);
+        setShowEditForm(true);
+        setFormMode('DUPLICATE');
     };
 
     const showFormModal = () => showUploadForm ? <Modal
@@ -48,10 +56,10 @@ const EventTable = (props: EventTableProp) => {
     const showEditFormModal = () => showEditForm ? <Modal
         className='ic-modal'
         width={"80%"}
-        title={t('edit_form_title')}
+        title={t(formMode === 'EDIT' ? 'edit_form_title' : 'duplicate_form_title')}
         modalClosed={() => setShowEditForm(false)}
         visible={showEditForm}>
-        <EventForm onSave={onSave} onCancel={onCloseModal} event={selectedEvent}></EventForm>
+        <EventForm onSave={onSave} onCancel={onCloseModal} event={selectedEvent} mode={formMode}></EventForm>
     </Modal> : null;
 
     const showEditParticipantsModalAction = (event: IEvent) => {
@@ -81,10 +89,11 @@ const EventTable = (props: EventTableProp) => {
                     <th>{t('name')}</th>
                     <th>{t('date')}</th>
                     <th>{t('registration_deadline')}</th>
+                    <th>{t('players_count')}</th>
                     <th>{t('price')}</th>
                     <th>{t('guest_extra_price')}</th>
                     <th>{t('type')}</th>
-                    <th>{t('is_festival')}</th>
+                    <th>{t('is_festival_short')}</th>
                     <th>{t('is_online')}</th>
                     <th>{t('is_active')}</th>
                     <th>{t('actions')}</th>
@@ -104,6 +113,7 @@ const EventTable = (props: EventTableProp) => {
                                     target={'_blank'}>{event.name}</a></td>
                                 <td className={'white-space'}>{moment(event.date).format('DD-MM-yyyy hh:mm').toString()}</td>
                                 <td className={'white-space'}>{moment(event.registration_deadline).format('DD-MM-yyyy').toString()}</td>
+                                <td className={'text-center'}>{event.players_count}</td>
                                 <td className={'text-center'}>{event.price}</td>
                                 <td className={'text-center'}>{event.guest_extra_price}</td>
                                 <td className={'text-center'}>{t(EventTypes[+event.event_type])}</td>
@@ -121,6 +131,11 @@ const EventTable = (props: EventTableProp) => {
                                         className="button muted-button">
                                         {t('delete')}
                                     </button>
+                                    <button
+                                        onClick={() => duplicate(event)}
+                                        className="button muted-button">
+                                        {t('duplicate')}
+                                    </button>
 
                                     {[EventType.SINGLES, EventType.EVENT, EventType.COUPLES, EventType.GROUPS].includes(event.event_type) &&
                                     <button
@@ -128,7 +143,8 @@ const EventTable = (props: EventTableProp) => {
                                         className="button muted-button">
                                         {t('edit_players')}
                                     </button>}
-                                    {[EventType.SINGLES, EventType.EVENT, EventType.COUPLES, EventType.GROUPS].includes(event.event_type) && event.has_registration_list === '1' &&
+                                    {[EventType.SINGLES, EventType.EVENT, EventType.COUPLES, EventType.GROUPS].includes(event.event_type) &&
+                                        event.has_registration_list === '1' &&
                                     <button
                                         onClick={() => {
                                             setSelectedEvent(event);

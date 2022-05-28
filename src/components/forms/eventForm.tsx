@@ -4,7 +4,7 @@ import DatePicker from "react-datepicker";
 import {EditorState, convertToRaw, ContentState} from 'draft-js';
 import {Editor} from "react-draft-wysiwyg";
 import './eventForm.r.scss';
-import {IEvent} from "../interfaces/event";
+import {IEvent} from "../../interfaces/event";
 import {map, isUndefined} from 'lodash';
 import axios from 'axios';
 import {stateFromHTML} from 'draft-js-import-html';
@@ -16,6 +16,7 @@ interface EventFormProp {
     onSave: () => void;
     onCancel: () => void;
     event?: IEvent;
+    mode?: string;
 }
 
 const EventForm = (props: EventFormProp) => {
@@ -68,6 +69,21 @@ const EventForm = (props: EventFormProp) => {
     const {t} = useTranslation();
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
+    const toolbarOptions =
+    {
+        options:['inline', 'link', 'list', 'image', 'blockType', 'fontSize', 'textAlign', 'history', 'colorPicker'], // This is where you can specify what options you need in
+            inline:
+        {
+            options:['bold', 'italic', 'underline', 'strikethrough', 'monospace',
+            ]
+        },
+        image :
+        {
+            alignmentEnabled: false,
+                alt: { present: true, mandatory: false },
+            previewImage: true
+        }
+    }
 
     useEffect(() => {
         getTitles();
@@ -122,7 +138,7 @@ const EventForm = (props: EventFormProp) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const eventFormTemp = getFormValues(e.target.elements);
-        if (props.event) {
+        if (props.event && props.mode === 'EDIT') {
             const id = props.event?.id;
             eventFormTemp['id'] = id;
             axios
@@ -163,7 +179,7 @@ const EventForm = (props: EventFormProp) => {
                                 </label>
                                 <select name="event_type" value={eventForm.event_type}
                                         onChange={handleInputChange}
-                                        disabled={!isUndefined(props.event?.id)}>
+                                        disabled={props.mode === 'EDIT'}>
                                     <option value="1">{t('event_type_single')}</option>
                                     <option value="2">{t('event_type_couple')}</option>
                                     <option value="3">{t('event_type_group')}</option>
@@ -355,13 +371,15 @@ const EventForm = (props: EventFormProp) => {
                             <label>{t('description.title')} </label>
                             <Editor
                                 editorState={descriptionState}
-                                onEditorStateChange={onDescriptionStateChange} />
+                                onEditorStateChange={onDescriptionStateChange}
+                                toolbar ={toolbarOptions}/>
 
 
                             <label>{t('schedule')} </label>
                             <Editor
                                 editorState={scheduleState}
-                                onEditorStateChange={onScheduleStateChange} />
+                                onEditorStateChange={onScheduleStateChange}
+                                toolbar ={toolbarOptions}/>
 
 
                             <label>  {t('regulations_file_link')}</label>

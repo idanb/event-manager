@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import {useTranslation} from "react-i18next";
 import Axios, {AxiosResponse} from "axios";
-import {IPlayerParticipation} from "../interfaces/playerParticipation";
+import {IPlayerParticipation} from "../../interfaces/playerParticipation";
 import {Table} from "react-bootstrap";
 import EditableLabel from 'react-inline-editing';
 import moment from "moment";
-import {EventType, IEvent} from "../interfaces/event";
+import {EventType, IEvent} from "../../interfaces/event";
 
 
 interface EditParticipantsFormProps {
@@ -61,7 +61,6 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
     const refreshPlayers = () => {
         Axios.get(`${url2}?eventType=${event.event_type}&event=${event.id}`).then((res: AxiosResponse<any>) => {
             if (res.data && res.data.length) {
-                debugger;
                 setPlayers(res.data);
                 const visibleArr: boolean[] = [];
                 for (let i = 0; i < res.data.length; ++i) {
@@ -158,6 +157,20 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
         })
     }
 
+    const onRemoveRecord = (id, e) => {
+        if (e.code === 'Enter') {
+            return;
+        }
+        e.preventDefault();
+
+        const approve = window.confirm("אתה עומד למחוק את הרשומה " + id);
+        if (approve === true) {
+            Axios.delete(`${url2}?player_id=${id}&event_type=${event.event_type}&delete=true`).then((res) => {
+                refreshPlayers();
+            })
+        }
+    }
+
     const _handleFocus = (id, text) => {
         console.log('Focused with text: ' + text);
     }
@@ -205,11 +218,10 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
                         className={'add-players-manual-btn button muted-button trb trb-secondary lt up'}
                         onClick={() => exportReport()}>{t('export_players')}</button>}
 
-                    {!formVisible && event.has_registration_list && <button
+                    {!formVisible && event.has_registration_list === '1' && <button
                         className={'add-players-manual-btn button muted-button trb trb-secondary lt up'}
                         onClick={() => exportReport(1)}>{t('export_guests')}</button>}
 
-                    <div onDoubleClick={removeAll}> לצורכי בדיקה - מחיקת כלל המשתתפים לחץ פעמיים</div>
                 </div>
                 <form onSubmit={e => {
                     e.preventDefault();
@@ -273,6 +285,10 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
                                             {indexTemp === 1 && <button
                                                 onClick={(e) => onUpdateRecord(p.id, e, p.is_canceled)}>
                                                 {t(p.is_canceled === '0' ? 'cancel_registration' : 'approve_registration')}
+                                            </button>}
+                                            {indexTemp === 1 &&<button
+                                                onClick={(e) => onRemoveRecord(p.id, e)}>
+                                                {t( 'remove_registration')}
                                             </button>}
                                         </td>
                                     </tr>);

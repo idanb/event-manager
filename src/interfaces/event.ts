@@ -9,6 +9,7 @@ export interface IEvent {
     id: number | string;
     name: string;
     date: string;
+    players_count?: string;
     event_type: EventType;
     is_festival: boolean | string;
     only_members_limit: string;

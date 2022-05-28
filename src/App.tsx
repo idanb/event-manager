@@ -1,18 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import './App.scss';
-import EventTable from './tables/EventTable'
+import EventTable from './components/EventTable'
 import Axios, {AxiosResponse} from "axios";
 import {useTranslation} from "react-i18next";
 import {IEvent} from "./interfaces/event";
 import Modal from "./components/modal/modal";
-import EventForm from "./forms/eventForm";
+import EventForm from "./components/forms/eventForm";
 import "react-datepicker/dist/react-datepicker.css";
 import "primeicons/primeicons.css"
 
 const App = () => {
     require('dotenv').config();
-    const url = process.env.REACT_APP_DOMAIN + '/events';
+    const url = process.env.REACT_APP_DOMAIN + '/events' + '?withPlayersCount=true';
     const {t} = useTranslation();
     const [showForm, setShowForm] = useState<boolean>(false);
 
@@ -48,7 +48,7 @@ const App = () => {
     const refreshEvents = () => {
         Axios.get(url).then((res: AxiosResponse<any>) => {
             res.data.sort(function (a, b) {
-                return new Date(a.date).getTime() - new Date(b.date).getTime();
+                return new Date(b.date).getTime() - new Date(a.date).getTime();
             });
             setEvents(res.data);
         })
@@ -80,7 +80,8 @@ const App = () => {
             <a href={'http://main.bridge.co.il/payments/payments_dev.php/competitions/list'} rel="noreferrer" target="_blank">{t('show')}</a>
             <div className="flex-row">
                 <div className="flex-large">
-                    <EventTable onRefresh={refreshEvents} events={events}
+                    <EventTable onRefresh={refreshEvents}
+                                events={events}
                                 deleteEvent={deleteEvent}/>
                 </div>
             </div>
