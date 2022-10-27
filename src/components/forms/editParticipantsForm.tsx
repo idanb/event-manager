@@ -20,6 +20,7 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
     const url3 = process.env.REACT_APP_DOMAIN_DEV  + '/participants';
     const url1 = process.env.REACT_APP_DOMAIN + '/participantsExport';
     const url4 = process.env.REACT_APP_DOMAIN + '/participantsUpload' || '';
+    const url5 = process.env.REACT_APP_DOMAIN + '/participantsApproval' || '';
 
     const {t, i18n} = useTranslation();
     const [players, setPlayers] = useState<IPlayerParticipation[]>([]);
@@ -82,7 +83,7 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
 
 
     const removeAll = (e) => {
-        Axios.delete(url4 + '/' + event?.id + '/' + event?.event_type)            .then(res => {
+        Axios.delete(url4 + '/' + event?.id + '/' + event?.event_type).then(res => {
             alert('כלל המשתתפים נמחקו');
         })
             .catch(err => alert('שמירה נכשלה'));
@@ -167,6 +168,20 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
         if (approve === true) {
             Axios.delete(`${url2}?player_id=${id}&event_type=${event.event_type}&delete=true`).then((res) => {
                 refreshPlayers();
+            })
+        }
+    }
+
+    const onSendApproval = (id, e) => {
+        if (e.code === 'Enter') {
+            return;
+        }
+        e.preventDefault();
+
+        const approve = window.confirm("אתה עומד לשלוח אישור הרשמה למשתתפים המקושרים לרשומה " + id);
+        if (approve === true) {
+            Axios.get(`${url5}?player_id=${id}&event_type=${event.event_type}&event_id=${event.id}`).then((res) => {
+                alert('אישור נשלח בהצלחה');
             })
         }
     }
@@ -289,6 +304,10 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
                                             {indexTemp === 1 &&<button
                                                 onClick={(e) => onRemoveRecord(p.id, e)}>
                                                 {t( 'remove_registration')}
+                                            </button>}
+                                            {indexTemp === 1 &&<button
+                                                onClick={(e) => onSendApproval(p.id, e)}>
+                                                {t( 'send_registration')}
                                             </button>}
                                         </td>
                                     </tr>);

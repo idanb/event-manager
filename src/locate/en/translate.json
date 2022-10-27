@@ -2,7 +2,7 @@
 
   "translations": {
     "paragraph": "Introduction",
-    "system_name": "רשימת תחרויות / אירועים קרובים",
+    "system_name": "רשימת תחרויות / אירועים ",
     "author": {
       "title": "Author Name",
       "value": "Tariqul"
@@ -23,17 +23,21 @@
     "number": "מספר חבר",
     "date": "תאריך ושעה",
     "actions": "פעולות",
+    "id": "מזהה",
     "edit": "עריכה",
     "delete": "מחיקה",
     "approve_registration": "אשר הרשמה",
+    "send_registration": "שלח אישור הרשמה",
     "remove_registration": "מחק רשומה",
     "press_to_show": "הצג/הסתר שחקנים",
     "delete_record": "מחיקת",
+    "show_archive": "הצג ארכיון",
+    "hide_archive": "הסתר ארכיון",
     "canceled": "האם בוטל",
     "cancel_registration": " ביטול הרשמה",
     "price": "מחיר",
     "guest_extra_price": "תוספת לאורח",
-    "edit_players": "עריכת משתתפים",
+    "edit_players": " משתתפים",
     "regulations_file_link": " קישור לקובץ תקנון",
     "add_players": "טעינת זכאים",
     "player_form_title": " טופס טעינת זכאים",

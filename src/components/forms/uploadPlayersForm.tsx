@@ -2,13 +2,13 @@ import React, {useState} from 'react'
 import axios from "axios";
 import {IEvent} from "../../interfaces/event";
 
-interface PlayerFormProp {
+interface UploadPlayersFormProp {
     onSave: () => void;
     onCancel: () => void;
     event: IEvent | undefined;
 }
 
-const PlayerForm = (props: PlayerFormProp) => {
+const UploadPlayersForm = (props: UploadPlayersFormProp) => {
     const url = process.env.REACT_APP_DOMAIN + '/participantsUpload' || '';
     const url2 = process.env.REACT_APP_DOMAIN_DEV  + '/participantsUpload';
 
@@ -80,4 +80,4 @@ const PlayerForm = (props: PlayerFormProp) => {
         </>
     )
 }
-export default PlayerForm;
+export default UploadPlayersForm;

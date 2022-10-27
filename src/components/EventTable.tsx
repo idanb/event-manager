@@ -4,9 +4,10 @@ import {EventType, IEvent} from "../interfaces/event";
 import {EventTypes} from "../constants/constants";
 import Modal from "./modal/modal";
 import EventForm from "./forms/eventForm";
-import PlayerForm from "./forms/playerForm";
+import UploadPlayersForm from "./forms/uploadPlayersForm";
 import EditParticipantsForm from "./forms/editParticipantsForm";
 import moment from "moment";
+import {Dropdown, OverlayTrigger, Tooltip} from "react-bootstrap";
 
 interface EventTableProp {
     events: IEvent[];
@@ -21,6 +22,13 @@ const EventTable = (props: EventTableProp) => {
     const [showEditForm, setShowEditForm] = useState<boolean>(false);
     const [showUploadForm, setShowUploadForm] = useState<boolean>(false);
     const [showEditParticipants, setShowEditParticipants] = useState<boolean>(false);
+    const [filter, setFilter] = useState('');
+
+
+    const onClose = () => {
+        props.onRefresh();
+        setShowEditParticipants(false)
+    }
 
     const onSave = () => {
         props.onRefresh();
@@ -49,8 +57,8 @@ const EventTable = (props: EventTableProp) => {
         title={t('player_form_title')}
         modalClosed={() => setShowUploadForm(false)}
         visible={showUploadForm}>
-        <PlayerForm onSave={() => setShowUploadForm(false)} onCancel={onSave}
-                    event={selectedEvent} />
+        <UploadPlayersForm onSave={() => setShowUploadForm(false)} onCancel={onSave}
+                           event={selectedEvent} />
     </Modal> : null;
 
     const showEditFormModal = () => showEditForm ? <Modal
@@ -71,11 +79,13 @@ const EventTable = (props: EventTableProp) => {
         className='ic-modal'
         width={"80%"}
         title={t('edit_players_title') + ' - ' + selectedEvent?.name}
-        modalClosed={() => setShowEditParticipants(false)}
+        modalClosed={onClose}
         visible={showEditParticipants}>
         {selectedEvent &&
         <EditParticipantsForm event={selectedEvent} onSave={onSave} onCancel={onSave} />}
     </Modal> : null;
+
+
 
 
     return (
@@ -83,9 +93,17 @@ const EventTable = (props: EventTableProp) => {
             {showFormModal()}
             {showEditParticipantsModal()}
             {showEditFormModal()}
+            <input id="filter"
+                   name="filter"
+                   type="text"
+                   placeholder='הקלד שם ארוע לסינון'
+                   value={filter}
+                   onChange={event => setFilter(event.target.value)}
+            />
             <table>
                 <thead>
                 <tr>
+                    <th>{t('id')}</th>
                     <th>{t('name')}</th>
                     <th>{t('date')}</th>
                     <th>{t('registration_deadline')}</th>
@@ -101,19 +119,32 @@ const EventTable = (props: EventTableProp) => {
                 </thead>
                 <tbody>
                 {props.events.length > 0 ? (
-                    props.events.map(event => {
-                            var now = new Date();
+                    props.events.filter(event => event.name.includes(filter)).map(event => {
+                            const has_register = [EventType.SINGLES, EventType.EVENT, EventType.COUPLES, EventType.GROUPS].includes(event.event_type) &&
+                            event.has_registration_list === '1';
+                            const now = new Date();
                             now.setHours(0, 0, 0, 0);
 
                             const isOverdue = new Date(event.date) < now;
 
-                            return (<tr key={event.id} className={`${isOverdue ? 'red' : ''}`}>
-                                <td><a
-                                    href={'' + process.env.REACT_APP_DOMAIN + '/event/' + event.id}
-                                    target={'_blank'}>{event.name}</a></td>
+                            return (<tr key={event.id}>
+                                <td className={'text-center'}>{event.id}</td>
+
+                                <td>
+                                    <OverlayTrigger
+                                        placement="right"
+                                        delay={{ show: 250, hide: 400 }}
+                                        overlay={<Tooltip id="tooltip-disabled">{event.name}</Tooltip>}>
+                                    <a href={'' + process.env.REACT_APP_DOMAIN + '/event/' + event.id}
+                                        className={`no-wrap ${isOverdue ? 'red' : ''}`}
+                                        target={'_blank'}>{event.name}</a>
+                                    </OverlayTrigger>
+
+
+                                </td>
                                 <td className={'white-space'}>{moment(event.date).format('DD-MM-yyyy hh:mm').toString()}</td>
                                 <td className={'white-space'}>{moment(event.registration_deadline).format('DD-MM-yyyy').toString()}</td>
-                                <td className={'text-center'}>{event.players_count}</td>
+                                <td className={'text-center'}>{ has_register ?  event.registers_count + ' / ' : '' }{event.players_count} </td>
                                 <td className={'text-center'}>{event.price}</td>
                                 <td className={'text-center'}>{event.guest_extra_price}</td>
                                 <td className={'text-center'}>{t(EventTypes[+event.event_type])}</td>
@@ -121,20 +152,11 @@ const EventTable = (props: EventTableProp) => {
                                 <td className={`${event.is_online === '1'}-sign`}></td>
                                 <td className={`${event.is_active === '1'}-sign`}></td>
                                 <td className={'actions-cell'}>
+                                    <div>
                                     <button
                                         onClick={() => editEvent(event)}
                                         className="button muted-button">
                                         {t('edit')}
-                                    </button>
-                                    <button
-                                        onClick={() => props.deleteEvent(event.id)}
-                                        className="button muted-button">
-                                        {t('delete')}
-                                    </button>
-                                    <button
-                                        onClick={() => duplicate(event)}
-                                        className="button muted-button">
-                                        {t('duplicate')}
                                     </button>
 
                                     {[EventType.SINGLES, EventType.EVENT, EventType.COUPLES, EventType.GROUPS].includes(event.event_type) &&
@@ -143,8 +165,7 @@ const EventTable = (props: EventTableProp) => {
                                         className="button muted-button">
                                         {t('edit_players')}
                                     </button>}
-                                    {[EventType.SINGLES, EventType.EVENT, EventType.COUPLES, EventType.GROUPS].includes(event.event_type) &&
-                                        event.has_registration_list === '1' &&
+                                    {has_register &&
                                     <button
                                         onClick={() => {
                                             setSelectedEvent(event);
@@ -153,6 +174,18 @@ const EventTable = (props: EventTableProp) => {
                                         className="button muted-button">
                                         {t('add_players')}
                                     </button>}
+                                    </div>
+
+                                    <Dropdown className="d-inline mx-2">
+                                        <Dropdown.Toggle id="dropdown-autoclose-true" className={'btn-flat'}>
+                                            פעולות נוספות
+                                        </Dropdown.Toggle>
+
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item onClick={() => duplicate(event)}>{t('duplicate')}</Dropdown.Item>
+                                            <Dropdown.Item onClick={() => props.deleteEvent(event.id)}>{t('delete')}</Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </td>
                             </tr>)
                         }

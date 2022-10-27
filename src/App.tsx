@@ -15,6 +15,7 @@ const App = () => {
     const url = process.env.REACT_APP_DOMAIN + '/events' + '?withPlayersCount=true';
     const {t} = useTranslation();
     const [showForm, setShowForm] = useState<boolean>(false);
+    const [showArchive, setShowArchive] = useState<boolean>(false);
 
     const onCloseModal = () => {
         setShowForm(false);
@@ -48,7 +49,7 @@ const App = () => {
     const refreshEvents = () => {
         Axios.get(url).then((res: AxiosResponse<any>) => {
             res.data.sort(function (a, b) {
-                return new Date(b.date).getTime() - new Date(a.date).getTime();
+                return new Date(a.date).getTime() - new Date(b.date).getTime();
             });
             setEvents(res.data);
         })
@@ -65,7 +66,7 @@ const App = () => {
 
 
     };
-
+    var now = new Date();
     if (!events) return <span>loading...</span>;
     return (
         <div className="container">
@@ -78,10 +79,19 @@ const App = () => {
                 {t('add')}
             </button>
             <a href={'http://main.bridge.co.il/payments/payments_dev.php/competitions/list'} rel="noreferrer" target="_blank">{t('show')}</a>
+
+            <button
+                onClick={() => setShowArchive(!showArchive)}
+                className="button muted-button margin-bottom-10 pull-left"
+            >
+                {t(!showArchive ? 'show_archive' : 'hide_archive')}
+            </button>
+
+
             <div className="flex-row">
                 <div className="flex-large">
                     <EventTable onRefresh={refreshEvents}
-                                events={events}
+                                events={events.filter((e) => showArchive ? new Date(e.date) < now : new Date(e.date) > now)}
                                 deleteEvent={deleteEvent}/>
                 </div>
             </div>

@@ -47,7 +47,6 @@ table tr td:first-child a{
   text-decoration: underline;
 
 }
-table tr.red td:first-child a{
+table .red {
   color: #ff9266 !important;
-  text-decoration: underline;
 }
