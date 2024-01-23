@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import './App.scss';
-import EventTable from './components/EventTable'
+import EventTable from './components/event-table'
 import Axios, {AxiosResponse} from "axios";
 import {useTranslation} from "react-i18next";
 import {IEvent} from "./interfaces/event";
 import Modal from "./components/modal/modal";
-import EventForm from "./components/forms/eventForm";
+import EventForm from "./components/event-form/event-form";
 import "react-datepicker/dist/react-datepicker.css";
 import "primeicons/primeicons.css"
 

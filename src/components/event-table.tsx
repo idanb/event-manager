@@ -3,11 +3,11 @@ import {useTranslation} from "react-i18next";
 import {EventType, IEvent} from "../interfaces/event";
 import {EventTypes} from "../constants/constants";
 import Modal from "./modal/modal";
-import EventForm from "./forms/eventForm";
-import UploadPlayersForm from "./forms/uploadPlayersForm";
-import EditParticipantsForm from "./forms/editParticipantsForm";
+import EventForm from "./event-form/event-form";
+import UploadPlayersForm from "./upload-players-form/upload-players-form";
 import moment from "moment";
 import {Dropdown, OverlayTrigger, Tooltip} from "react-bootstrap";
+import ParticipantsForm from "./participants-form/participants-form";
 
 interface EventTableProp {
     events: IEvent[];
@@ -82,7 +82,7 @@ const EventTable = (props: EventTableProp) => {
         modalClosed={onClose}
         visible={showEditParticipants}>
         {selectedEvent &&
-        <EditParticipantsForm event={selectedEvent} onSave={onSave} onCancel={onSave} />}
+        <ParticipantsForm event={selectedEvent} onSave={onSave} onCancel={onSave} />}
     </Modal> : null;
 
 
@@ -132,7 +132,7 @@ const EventTable = (props: EventTableProp) => {
 
                                 <td>
                                     <OverlayTrigger
-                                        placement="right"
+                                        placement="left"
                                         delay={{ show: 250, hide: 400 }}
                                         overlay={<Tooltip id="tooltip-disabled">{event.name}</Tooltip>}>
                                     <a href={'' + process.env.REACT_APP_DOMAIN + '/event/' + event.id}

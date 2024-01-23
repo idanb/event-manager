@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next";
 import DatePicker from "react-datepicker";
 import {EditorState, convertToRaw, ContentState} from 'draft-js';
 import {Editor} from "react-draft-wysiwyg";
-import './eventForm.r.scss';
+import './event-form.r.scss';
 import {IEvent} from "../../interfaces/event";
 import {map, isUndefined} from 'lodash';
 import axios from 'axios';

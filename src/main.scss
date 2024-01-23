@@ -715,10 +715,6 @@ td.false-sign {
   display: block;
 }
 
-.inline-block {
-  display: inline-block;
-}
-
 .inline {
   display: inline;
 }
@@ -733,9 +729,12 @@ td.false-sign {
   max-width: 100%;
   height: auto;
 }
+.inline-block {
+  display: inline-block;
+}
 
 .show {
-  display: block !important;
+  display: block;
 }
 
 .hide {

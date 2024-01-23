@@ -2,19 +2,19 @@ import React, {useEffect, useState} from 'react'
 import {useTranslation} from "react-i18next";
 import Axios, {AxiosResponse} from "axios";
 import {IPlayerParticipation} from "../../interfaces/playerParticipation";
-import {Table} from "react-bootstrap";
+import {Dropdown, Table} from "react-bootstrap";
 import EditableLabel from 'react-inline-editing';
 import moment from "moment";
 import {EventType, IEvent} from "../../interfaces/event";
 
 
-interface EditParticipantsFormProps {
+interface ParticipantsFormProps {
     event: IEvent;
     onSave: () => void;
     onCancel: () => void;
 }
 
-const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormProps) => {
+const ParticipantsForm = ({event, onSave, onCancel}: ParticipantsFormProps) => {
     /* eslint-disable */
     const url2 = process.env.REACT_APP_DOMAIN  + '/participants';
     const url3 = process.env.REACT_APP_DOMAIN_DEV  + '/participants';
@@ -22,16 +22,33 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
     const url4 = process.env.REACT_APP_DOMAIN + '/participantsUpload' || '';
     const url5 = process.env.REACT_APP_DOMAIN + '/participantsApproval' || '';
 
-    const {t, i18n} = useTranslation();
+    const {t} = useTranslation();
     const [players, setPlayers] = useState<IPlayerParticipation[]>([]);
     const [visible, setVisible] = useState<boolean[]>([]);
-    const [isDev, setIsDev] = useState<boolean>(false);
+    const [recordFormMode, setRecordFormMode] = useState<string>('CREATE');
     const [formVisible, setFormVisible] = useState<boolean>(false);
     const [playerForm, setPlayerForm] = useState<any>([{bbo: '', name: '', number: ''}]);
     const [teamForm, setTeamForm] = useState<any>({name: '', number: ''});
+    const [recordId, setRecordId] = useState<number>();
 
 
     useEffect(() => {
+        setPlayerFormByCompType();
+        refreshPlayers();
+        setFormResponseOnKey()
+    }, []);
+
+    function setFormResponseOnKey(){
+        window.addEventListener('keydown', function (e) {
+            if (e.code == 'U+000A' || e.code == 'Enter' || e.keyCode == 13) {
+                e.preventDefault();
+                const test: HTMLElement | null = document.querySelector('#myButton');
+                test?.focus();
+                return false;
+            }
+        }, true);
+    }
+    function setPlayerFormByCompType(){
         if (event.event_type === EventType.SINGLES || event.event_type === EventType.EVENT) {
             setPlayerForm([{bbo: '', name: '', number: ''}]);
         } else if (event.event_type === EventType.COUPLES) {
@@ -46,18 +63,7 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
                 {bbo: '', name: '', number: ''}]);
 
         }
-        refreshPlayers()
-
-        window.addEventListener('keydown', function (e) {
-            if (e.code == 'U+000A' || e.code == 'Enter' || e.keyCode == 13) {
-                e.preventDefault();
-                const test: HTMLElement | null = document.querySelector('#myButton');
-                test?.focus();
-                return false;
-            }
-        }, true);
-
-    }, []);
+    }
 
     const refreshPlayers = () => {
         Axios.get(`${url2}?eventType=${event.event_type}&event=${event.id}`).then((res: AxiosResponse<any>) => {
@@ -91,6 +97,7 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
 
 
     const getGroupForm = () => {
+        console.log('teamForm', teamForm);
         return <tr>
             <td><input type="text" name={'team_name'} required placeholder={'שם קבוצה'}
                        onChange={e => setTeamForm({name: e.target.value, number: teamForm.number})}
@@ -109,9 +116,8 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
     }
     const getPlayerForm = () => {
 
-
-        return playerForm.map((value, index) => <div className={'player-row'} key={index}>
-            <tr>
+        return playerForm.map((value, index) =>
+            <tr className={'player-row'} key={index}>
                 <td><input type="text" name={'number'} required placeholder={'מספר חבר'}
                            onChange={e => updateFieldChanged(index, e)}
                            value={playerForm[index].number} />
@@ -123,11 +129,7 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
                 <td><input type="text" name={'bbo'} placeholder={'bbo'}
                            onChange={e => updateFieldChanged(index, e)}
                            value={playerForm[index].bbo} /></td>
-
-
-            </tr>
-
-        </div>)
+            </tr>)
     }
 
     const onSaveRecord = (e) => {
@@ -137,15 +139,28 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
             team: teamForm,
             event_id: event.id,
             event_type: event.event_type,
+            recordFormMode,
+            recordId
         }
-        Axios
-            .post(url3, req)
-            .then(res => {
-                onSave();
-                setFormVisible(false);
-                refreshPlayers();
-            })
-            .catch(err => alert('שמירה נכשלה'));
+        if(recordFormMode === 'CREATE') {
+            Axios
+                .post(url3, req)
+                .then(res => {
+                    onSave();
+                    setFormVisible(false);
+                    refreshPlayers();
+                })
+                .catch(err => alert('שמירה נכשלה'));
+        } else {
+            Axios
+                .put(url3, req)
+                .then(res => {
+                    onSave();
+                    setFormVisible(false);
+                    refreshPlayers();
+                })
+                .catch(err => alert('שמירה נכשלה'));
+        }
     }
 
     const onUpdateRecord = (id, e, state) => {
@@ -185,6 +200,34 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
             })
         }
     }
+    const onEditRecord = (id, e) => {
+        setRecordFormMode('EDIT');
+        setRecordId(id)
+        const record = players.find((p) => p.id === id);
+        const res: unknown[] = []
+        for(let i =1; i < 7; i++){
+            if(record && record['player'+i+'_num'] == 0 ){
+                record['player'+i+'_num'] = '';
+            }
+            res.push({
+                    bbo: record && record['player'+i+'_bbo'] || '',
+                    name: record && record['player'+i+'_name'] || '',
+                    number: record && record['player'+i+'_num']
+                });
+
+            }
+        if(record && record?.team_number == 0 ){
+            record.team_number = undefined;
+        }
+
+        setTeamForm({number: record?.team_number, name: record?.team_name || ''});
+        setPlayerForm(res)
+        if (e.code === 'Enter') {
+            return;
+        }
+        e.preventDefault();
+        setFormVisible(!formVisible);
+    }
 
     const _handleFocus = (id, text) => {
         console.log('Focused with text: ' + text);
@@ -195,6 +238,12 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
             refreshPlayers();
 
         })
+    }
+
+    const addRecordManual = () => {
+        setPlayerFormByCompType();
+        setRecordFormMode('CREATE');
+        setFormVisible(!formVisible)
     }
 
 
@@ -227,7 +276,8 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
                     <button
                         id={'myButton'}
                         className={'add-players-manual-btn button muted-button trb trb-secondary lt up'}
-                        onClick={() => setFormVisible(!formVisible)}>{t(!formVisible ? 'add_players_manual' : 'show_players_table')}</button>
+                        onClick={addRecordManual}>
+                        {t(!formVisible ? 'add_players_manual' : 'show_players_table')}</button>
 
                     {!formVisible && <button
                         className={'add-players-manual-btn button muted-button trb trb-secondary lt up'}
@@ -297,18 +347,38 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
                                         <td>{p.is_canceled === '1' ? ' כן' : 'לא'}</td>
                                         <td>{p.is_paid === '1' ? ' כן' : 'לא'}</td>
                                         <td>
-                                            {indexTemp === 1 && <button
+                                            {indexTemp === 1 && <>
+                                                <button
+                                                className="button muted-button"
                                                 onClick={(e) => onUpdateRecord(p.id, e, p.is_canceled)}>
                                                 {t(p.is_canceled === '0' ? 'cancel_registration' : 'approve_registration')}
-                                            </button>}
-                                            {indexTemp === 1 &&<button
-                                                onClick={(e) => onRemoveRecord(p.id, e)}>
-                                                {t( 'remove_registration')}
-                                            </button>}
-                                            {indexTemp === 1 &&<button
-                                                onClick={(e) => onSendApproval(p.id, e)}>
-                                                {t( 'send_registration')}
-                                            </button>}
+                                            </button>
+
+                                                <button
+                                                    className="button muted-button"
+                                                    onClick={(e) => onEditRecord(p.id, e)}>
+                                                    {t( 'edit_record')}
+                                                </button>
+                                            </>
+                                            }
+
+                                            {indexTemp === 1 && <Dropdown className="d-inline mx-2 inline-block">
+                                                <Dropdown.Toggle id="dropdown-autoclose-true" className={'btn-flat'}>
+                                                    פעולות נוספות
+                                                </Dropdown.Toggle>
+                                                <Dropdown.Menu>
+
+                                                    <Dropdown.Item
+                                                        onClick={(e) => onSendApproval(p.id, e)}>
+                                                        {t( 'send_registration')}
+                                                    </Dropdown.Item>
+
+                                                    <Dropdown.Item
+                                                        onClick={(e) => onRemoveRecord(p.id, e)}>
+                                                        {t( 'remove_registration')}
+                                                    </Dropdown.Item>
+                                                </Dropdown.Menu>
+                                            </Dropdown>}
                                         </td>
                                     </tr>);
                                 }
@@ -321,9 +391,10 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
                         </tr>}
                         {formVisible && event.event_type === EventType.GROUPS && getGroupForm()}
                         {formVisible && getPlayerForm()}
-                        {formVisible && <td>
-                            <button onClick={onSaveRecord}>{t('שמירה')}</button>
-                        </td>}
+                        {formVisible && <tr>
+                            <td><button className="button muted-button" onClick={onSaveRecord}>{t('save')}</button></td>
+
+                        </tr>}
                         </tbody>
                     </Table>
                 </form>
@@ -331,4 +402,4 @@ const EditParticipantsForm = ({event, onSave, onCancel}: EditParticipantsFormPro
         </>
     )
 }
-export default EditParticipantsForm;
+export default ParticipantsForm;

@@ -5,7 +5,7 @@ export interface IPlayerParticipation {
     event_type: string;
     is_festival: boolean | string;
     status: boolean | string;
-    player1_id: string;
+    player1_num: number;
     player1_name: string;
     player1_bbo: string;
     player2_id: string;
@@ -17,4 +17,6 @@ export interface IPlayerParticipation {
     receipt: string;
     is_canceled: string;
     is_paid: string;
+    team_name?: string;
+    team_number?: number;
 }
