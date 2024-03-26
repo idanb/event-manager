@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import './App.scss';
+import './app-container.scss';
 import EventTable from './components/event-table'
 import Axios, {AxiosResponse} from "axios";
 import {useTranslation} from "react-i18next";
@@ -10,7 +10,7 @@ import EventForm from "./components/event-form/event-form";
 import "react-datepicker/dist/react-datepicker.css";
 import "primeicons/primeicons.css"
 
-const App = () => {
+const AppContainer = () => {
     require('dotenv').config();
     const url = process.env.REACT_APP_DOMAIN + '/events' + '?withPlayersCount=true';
     const {t} = useTranslation();
@@ -91,6 +91,7 @@ const App = () => {
             <div className="flex-row">
                 <div className="flex-large">
                     <EventTable onRefresh={refreshEvents}
+                                showArchive={showArchive}
                                 events={events.filter((e) => showArchive ? new Date(e.date) < now : new Date(e.date) > now)}
                                 deleteEvent={deleteEvent}/>
                 </div>
@@ -99,4 +100,4 @@ const App = () => {
     )
 }
 
-export default App;
+export default AppContainer;

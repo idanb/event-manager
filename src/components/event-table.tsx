@@ -13,9 +13,10 @@ interface EventTableProp {
     events: IEvent[];
     deleteEvent: (arg0: any) => any;
     onRefresh: () => any;
+    showArchive: boolean;
 }
 
-const EventTable = (props: EventTableProp) => {
+const EventTable = ({events, showArchive, deleteEvent, onRefresh}: EventTableProp) => {
     const {t} = useTranslation();
     const [selectedEvent, setSelectedEvent] = useState<IEvent>();
     const [formMode, setFormMode] = useState<string>();
@@ -26,12 +27,12 @@ const EventTable = (props: EventTableProp) => {
 
 
     const onClose = () => {
-        props.onRefresh();
+        onRefresh();
         setShowEditParticipants(false)
     }
 
     const onSave = () => {
-        props.onRefresh();
+        onRefresh();
         setShowEditForm(false);
 
     };
@@ -118,8 +119,8 @@ const EventTable = (props: EventTableProp) => {
                 </tr>
                 </thead>
                 <tbody>
-                {props.events.length > 0 ? (
-                    props.events.filter(event => event.name.includes(filter)).map(event => {
+                {events.length > 0 ? (
+                    (showArchive ? events.reverse() : events).filter(event => event.name.includes(filter)).map(event => {
                             const has_register = [EventType.SINGLES, EventType.EVENT, EventType.COUPLES, EventType.GROUPS].includes(event.event_type) &&
                             event.has_registration_list === '1';
                             const now = new Date();
@@ -183,7 +184,7 @@ const EventTable = (props: EventTableProp) => {
 
                                         <Dropdown.Menu>
                                             <Dropdown.Item onClick={() => duplicate(event)}>{t('duplicate')}</Dropdown.Item>
-                                            <Dropdown.Item onClick={() => props.deleteEvent(event.id)}>{t('delete')}</Dropdown.Item>
+                                            <Dropdown.Item onClick={() => deleteEvent(event.id)}>{t('delete')}</Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 </td>
